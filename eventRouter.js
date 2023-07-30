@@ -7,6 +7,6 @@ const {check} = require("express-validator");
 
 router.post('/new', [
     check('name', "Навзние события не может быть пустым.").notEmpty()
-],roleMiddleware(['vip']),controller.createEvent)
+],roleMiddleware(['vip','admin']),controller.createEvent)
 
 module.exports = router;

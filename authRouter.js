@@ -13,7 +13,7 @@ router.post('/login', controller.userLogin)
 router.post('/registerteam',[
     check('teamName', "Название команды не может быть пустым.").notEmpty(),
     check('password', "Пароль не может быть короче 4 и длиннее 12 символов.").isLength({min:4, max:12})
-],roleMiddleware(['user']), controller.registerTeam)
+],roleMiddleware(['user','admin','vip']), controller.registerTeam)
 router.get('/users', roleMiddleware(['admin']), controller.getUsers)
 
 module.exports = router;
