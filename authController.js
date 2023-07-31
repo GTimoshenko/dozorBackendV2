@@ -15,6 +15,7 @@ const generateAccessToken = (id, roles) => {
     return jwt.sign(payload, secret, {expiresIn: "1h"})
 }
 class authController {
+
     async userRegistration(req,res) {
         try {
             const errors = validationResult(req)
@@ -33,7 +34,13 @@ class authController {
             const user = new User ({name, password: hashPassword, avatarUrl : avatarUrl, roles : [userRole.value]})
             await user.save()
 
-            return res.json({message: "Пользователь зарегистрирован.",name,password, avatarUrl, roles : [userRole.value]})
+            return res.json({
+                message: "Пользователь зарегистрирован.", 
+                password, 
+                avatarUrl, 
+                name,
+                roles : [userRole.value]
+            })
         } catch(e) {
             console.log(e)
             res.status(400).json({message: "Не удалось зарегистрировать пользователя."})
@@ -55,8 +62,15 @@ class authController {
             }
 
             const token = generateAccessToken(candidate._id, candidate.roles)
-            return res.json({token})
 
+            const {avatarUrl} = candidate.avatarUrl 
+
+            return res.json({
+                name,
+                avatarUrl, 
+                id: candidate._id,
+                token
+            });
         } catch(e) {
             console.log(e)
             res.status(400).json({message: "Не удалось войти в аккаунт."})
@@ -75,6 +89,9 @@ class authController {
             if(teamCandidate){
                 return res.status(400).json({message : "Команда с таким именем уже существует."})
             }
+
+
+            console.log({teamName, password})
 
             const userRole = await Role.findOne({value: "captain"})
             const user = User({roles:[userRole.value]})
