@@ -21,7 +21,7 @@ class authController {
             if(!errors.isEmpty()){
                 return res.status(400).json({message: "Ошибка при регистрации", errors})
             }
-            const {name, password} = req.body
+            const {name, password,avatarUrl} = req.body
 
             const candidate = await User.findOne({name})
             if(candidate) {
@@ -30,10 +30,10 @@ class authController {
 
             const hashPassword = bcrypt.hashSync(password, 6)
             const userRole = await Role.findOne({value: "user"})
-            const user = new User ({name, password: hashPassword, roles: [userRole.value]})
+            const user = new User ({name, password: hashPassword, avatarUrl : avatarUrl, roles : [userRole.value]})
             await user.save()
 
-            return res.json({message: "Пользователь зарегистрирован.",name,password, roles : [userRole.value]})
+            return res.json({message: "Пользователь зарегистрирован.",name,password, avatarUrl, roles : [userRole.value]})
         } catch(e) {
             console.log(e)
             res.status(400).json({message: "Не удалось зарегистрировать пользователя."})
@@ -46,7 +46,7 @@ class authController {
 
             const candidate = await User.findOne({name})
             if(!candidate) {
-                return res.status(400).json({message: `Пользователь с именем ${name} не найден`})
+                return res.status(400).json({message: `Пользователь с именем ${name} не найден.`})
             }
 
             const validPassword = bcrypt.compareSync(password, candidate.password)
