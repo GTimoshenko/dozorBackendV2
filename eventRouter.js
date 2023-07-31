@@ -6,7 +6,8 @@ const roleMiddleware = require('./middleware/roleMiddleware')
 const {check} = require("express-validator");
 
 router.post('/new', [
-    check('name', "Навзние события не может быть пустым.").notEmpty()
+    check('name', "Название события не может быть пустым.").notEmpty()
 ],roleMiddleware(['vip','admin']),controller.createEvent)
+router.get('/', roleMiddleware(['user','admin','vip']), controller.getEvents)
 
 module.exports = router;

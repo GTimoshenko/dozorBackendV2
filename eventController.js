@@ -24,6 +24,15 @@ class eventController {
             return res.status(403).json({message: 'Не удалось создать событие.'})
         }
     }
+
+    async getEvents(req,res) {
+        try {
+            const events = await Event.find()
+            res.json(events)
+        } catch(e) {
+            console.log(e)
+        }
+    }
 }
 
 module.exports = new eventController();

@@ -33,7 +33,7 @@ class authController {
             const user = new User ({name, password: hashPassword, roles: [userRole.value]})
             await user.save()
 
-            return res.json({message: "Пользователь зарегистрирован."})
+            return res.json({message: "Пользователь зарегистрирован.",name,password, roles : [userRole.value]})
         } catch(e) {
             console.log(e)
             res.status(400).json({message: "Не удалось зарегистрировать пользователя."})
@@ -82,7 +82,7 @@ class authController {
             const team = new Team({teamName,password})
 
             await team.save()
-            return res.json({message: "Команда зарегистрирована."})
+            return res.json({message: "Команда зарегистрирована.", teamName,password})
         } catch(e) {
             console.log(e)
             res.status(400).json({message: "Не удалось зарегистрировать команду."})
