@@ -76,9 +76,6 @@ class authController {
                 return res.status(400).json({message : "Команда с таким именем уже существует."})
             }
 
-            const userRole = await Role.findOne({value: "captain"})
-            const user = User({roles:[userRole.value]})
-            await user.save()
             const team = new Team({teamName,password})
 
             await team.save()
