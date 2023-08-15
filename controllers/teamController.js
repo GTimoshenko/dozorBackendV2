@@ -15,17 +15,20 @@ class teamController {
 
 			const teamCandidate = await Team.findOne({ teamName })
 			const capObj = await User.findById(capId);
+			if (capObj.isTeamMember == 0) {
+				capObj.isTeamMember = 1;
+				await capObj.save()
+				if (teamCandidate) {
+					return res.status(400).json({ message: "Команда с таким именем уже существует." })
+				}
 
-			capObj.isTeamMember = 1;
-			await capObj.save()
-			if (teamCandidate) {
-				return res.status(400).json({ message: "Команда с таким именем уже существует." })
+				const team = new Team({ teamName, password })
+				team.captain = capObj;
+				await team.save()
+				res.json({ message: "Команда зарегистрирована.", team })
+			} else {
+				return res.status(200).json({ message: "Вы уже находитесь в команде." })
 			}
-
-			const team = new Team({ teamName, password })
-			team.captain = capObj;
-			await team.save()
-			res.json({ message: "Команда зарегистрирована.", team })
 		} catch (e) {
 			console.log(e)
 			res.status(400).json({ message: "Не удалось зарегистрировать команду." })
@@ -35,21 +38,25 @@ class teamController {
 	async addTeamMember(req, res) {
 		try {
 			const { memberId } = req.params
-			const { teamName } = req.body
+			const { teamName, password } = req.body
 
 			const team = await Team.findOne({ teamName: teamName })
 			const user = await User.findById(memberId);
-			user.isTeamMember = 1;
-			await user.save()
 
 			if (!team) {
 				res.json({ message: "Такой команды нет." })
 			}
 
-			team.member.push(user)
-			await team.save()
+			if (team.password === password) {
+				team.member.push(user)
+				await team.save()
+				user.isTeamMember = 1;
+				await user.save()
 
-			return res.json({ message: "Пользователь успешно добавлен в команду", team });
+				return res.json({ message: "Пользователь успешно добавлен в команду", team });
+			} else {
+				return res.status(200).json({ message: "Неверный пароль.", password });
+			}
 		} catch (e) {
 			console.log(e);
 			res.status(400).json({ message: "Не удалось присоединиться к команде." })
@@ -107,6 +114,16 @@ class teamController {
 		} catch (e) {
 			console.log(e)
 			res.status(400).json({ message: "Не удалось выгнать игрока." })
+		}
+	}
+
+	async getTeams(req, res) {
+		try {
+			const teams = await Team.find()
+			return res.json(teams)
+		} catch (e) {
+			console.log(e)
+			return res.json({ message: "Не удалось получить список комманд." })
 		}
 	}
 }

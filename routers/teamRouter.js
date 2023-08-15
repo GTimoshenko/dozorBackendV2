@@ -12,4 +12,5 @@ router.post('/:capId', [
 router.post('/invite/:memberId', controller.addTeamMember)
 router.post('/:teamId/delete/:capId', controller.deleteTeam)
 router.post('/:capId/:teamId/kickmember/:memberId', controller.kickMember)
+router.get('/all', controller.getTeams)
 module.exports = router;
