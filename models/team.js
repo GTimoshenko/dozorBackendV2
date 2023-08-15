@@ -1,8 +1,16 @@
-const {Schema, model} = require('mongoose')
+const { Schema, model } = require('mongoose');
+const user = require('./user');
+const { userSchema } = require('./user')
 
 const teamSchema = new Schema({
-    teamName: {type: String, unique: true,required: true},
-    password: {type: String, required: true}
-})
+	captain: {
+		type: Object,
+	},
+	teamName: { type: String, unique: true, required: true },
+	password: { type: String, required: true },
+	member: {
+		type: [userSchema],
+	}
+});
 
-module.exports = model ('Team', teamSchema)
+module.exports = model('Team', teamSchema)
