@@ -5,9 +5,12 @@ const authMiddleware = require('../middleware/authMiddleware')
 const roleMiddleware = require('../middleware/roleMiddleware')
 const { check } = require("express-validator");
 
-router.post('/new', [
+router.post('/:hostId', [
 	check('name', "Название события не может быть пустым.").notEmpty()
 ], roleMiddleware(['vip', 'admin']), controller.createEvent)
-router.get('/', roleMiddleware(['user', 'admin', 'vip']), controller.getEvents)
+router.post('/:hostId/delete/:eventId', controller.deleteEvent)
+router.post('/:hostId/:eventId/add/:teamId', controller.addTeam)
+router.post('/:hostId/:eventId/kickteam/:teamId', controller.kickTeam)
+router.get('/all', roleMiddleware(['user', 'admin', 'vip']), controller.getEvents)
 
 module.exports = router;

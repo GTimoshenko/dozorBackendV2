@@ -48,7 +48,7 @@ class teamController {
 			}
 
 			if (team.password === password) {
-				team.member.push(user)
+				team.members.push(user)
 				await team.save()
 				user.isTeamMember = 1;
 				await user.save()
@@ -100,8 +100,8 @@ class teamController {
 
 			if (team.captain.name === capCandidate.name) {
 				if (memberCandidate.name != capCandidate.name) {
-					const memberIndex = team.member.findIndex((memberCandidate) => memberCandidate._id.toString() === memberId)
-					team.member.splice(memberIndex, 1)
+					const memberIndex = team.members.findIndex((memberCandidate) => memberCandidate._id.toString() === memberId)
+					team.members.splice(memberIndex, 1)
 					await team.save()
 
 					memberCandidate.isTeamMember = 0

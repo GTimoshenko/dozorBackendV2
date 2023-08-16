@@ -8,9 +8,10 @@ const teamSchema = new Schema({
 	},
 	teamName: { type: String, unique: true, required: true },
 	password: { type: String, required: true },
-	member: {
+	members: {
 		type: [userSchema],
-	}
+	},
+	isInEvent : {type: Boolean, required: true, default: false},
 });
 
 module.exports = model('Team', teamSchema)
