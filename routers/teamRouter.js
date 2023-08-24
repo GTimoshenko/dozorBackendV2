@@ -13,4 +13,7 @@ router.post('/invite/:memberId', controller.addTeamMember)
 router.post('/:teamId/delete/:capId', controller.deleteTeam)
 router.post('/:capId/:teamId/kickmember/:memberId', controller.kickMember)
 router.get('/all', controller.getTeams)
+router.get('/team/:teamId', controller.getTeam)
+router.get('/teamcap/:teamId', controller.getTeamCaptain)
+router.get('/teammembers/:teamId', controller.getTeamMembers)
 module.exports = router;

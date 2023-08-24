@@ -12,5 +12,6 @@ router.post('/:hostId/delete/:eventId', controller.deleteEvent)
 router.post('/:hostId/:eventId/add/:teamId', controller.addTeam)
 router.post('/:hostId/:eventId/kickteam/:teamId', controller.kickTeam)
 router.get('/all', roleMiddleware(['user', 'admin', 'vip']), controller.getEvents)
-
+router.get('/eventmembers/:eventId', controller.getEventMembers)
+router.get('/event/:eventId', controller.getEvent)
 module.exports = router;

@@ -1,0 +1,11 @@
+AUTHORIZATION : {
+    ...
+}
+
+TEAMS : {
+    ...
+}
+
+EVENTS : {
+    ...
+}

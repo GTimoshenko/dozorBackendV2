@@ -91,6 +91,7 @@ class eventController {
 			res.status(400).json({message:"Не удалось удалить команду."})
 		}
 	}
+
 	async getEvents(req, res) {
 		try {
 			const events = await Event.find()
@@ -99,6 +100,41 @@ class eventController {
 			console.log(e)
 		}
 	}
+
+	async getEventMembers(req,res) {
+		try {
+			const {eventId} = req.params
+
+			const candidate = await Event.findById(eventId)
+
+			if(!candidate) {
+				res.status(400).json({message : "Не удалось получить данные о коммандах"})
+			}
+
+			res.status(200).json(candidate.members)
+		} catch(e) {
+			console.log(e)
+			res.status(400).json({message: "Не удалось получить информацию о мероприятии"})
+		}
+	}
+
+	async getEvent(req,res) {
+		try {
+			const {eventId} = req.params
+
+			const candidate = await Event.findById(eventId)
+
+			if(!candidate) {
+				res.status(400).json({message: "Не сущесвует события с таким ID"})
+			}
+
+			res.status(200).json(candidate)
+		} catch(e) {
+			console.log(e)
+			res.status(400).json({message : "Не удалось получить данные о событии"})
+		}
+	}
+
 }
 
 module.exports = new eventController();

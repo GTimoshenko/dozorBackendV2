@@ -85,6 +85,23 @@ class authController {
 			console.log(e)
 		}
 	}
+
+	async getUser(req,res) {
+		try {
+			const {userId} = req.params
+
+			const candidate = await User.findById(userId)
+
+			if(!candidate) {
+				return res.json({message : "Пользователя с таким id не существует"})
+			}
+
+			res.json(candidate)
+		} catch(e) {
+			console.log(e)
+			res.status(400).json({message : "Ошибка получения данных о пользователе"})
+		}
+	}
 }
 
 module.exports = new authController();
