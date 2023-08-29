@@ -1,11 +1,164 @@
 AUTHORIZATION : {
-    ...
+    ////
+
+    http://localhost:5000/auth/register - регистрация пользователя (post)
+    {
+        "name": "user", (имя не должно быть пустым)
+        "password": "12345" (пароль должен быть от 4 до 12 символов)
+    }
+    токен не требуется
+
+    ////
+
+    http://localhost:5000/auth/login -  авторизация пользователя (post)
+    {
+        "name": "user", 
+        "password": "12345" 
+    }
+    токен не требуется
+
+    ////
+
+    http://localhost:5000/auth/users - получить данные о всех пользователях (get)
+    токен требуется! (роль админа)
+
+    ////
+
+    http://localhost:5000/auth//user/:userId- получить данные об одном пользователе через его id (get)
+    токен не требуется
+
+
+}
+
+
+EVENTS : {
+    ////
+    http://localhost:5000/events/:hostId- создать событие, требуется id хооста (post)
+    {
+        "name": "dozor", (имя не должно быть пустым)
+        "description": "oogabooga"
+    }
+    токен требуется! (роль админа, vip)
+
+    ////
+
+    http://localhost:5000/events/:hostId/delete/:eventId - удалить событие требуется id хоста и id события (post)
+    токен не требуется
+
+    ////
+
+    http://localhost:5000/events/:hostId/:eventId/add/:teamId - добавить команду в событие, требуется id хоста и id команды (post)
+    токен не требуется
+
+    ////
+
+    http://localhost:5000/events/:hostId/:eventId/kickteam/:teamId - удалить команду из события, требуется id хоста и id команды (post)
+    токен не требуется
+
+    ////
+    
+    http://localhost:5000/events/all -получить данные о всех событиях (get)
+    токен требуется! (admin, vip, user)
+
+    ////
+
+    http://localhost:5000/events/eventmembers/:eventId () (get) получить данные об участниках события через его id (get)
+    токен не требуется
+    
+    ////
+
+    http://localhost:5000/events/event/:eventId - получить данные об одном событии через id (get)
+    токен не требуется
 }
 
 TEAMS : {
-    ...
+    ////
+
+    http://localhost:5000/teams/:capId - зарегистрировать команду, требуется id капитана (post)
+    {
+        "teamName": "dozor", (имя не должно быть пустым)
+        "password": "54321" (пароль должен быть от 4 до 12 символов)
+    }
+    токен требуется! (admin, vip, user)
+
+    ////
+    
+    http://localhost:5000/teams/invite/:memberId - пригласить пользователя в команду, требуется id пользователя (post)
+     {
+        "teamName": "dozor", (имя не должно быть пустым)
+        "password": "54321" (пароль должен быть от 4 до 12 символов)
+    }
+    токен не требуется
+    ////
+    
+    http://localhost:5000/teams/:teamId/delete/:capId - удалить команду, требуется id капитана и команды (post)
+    токен не требуется
+
+    ////
+
+    http://localhost:5000/teams/:capId/:teamId/kickmember/:memberId - выгнать члена команды, требуется id капитана, команды и члена команды, которого требуется выгнать  (post)
+    токен не требуется
+
+    ////
+
+    http://localhost:5000/teams/all - получить данные о всех командах (get)
+    токен не требуется
+
+    ////
+
+    http://localhost:5000/teams/team/:teamId - получить данные об одной команде (get)
+    токен не требуется
+
+    ////
+
+    http://localhost:5000/teams/teamcap/:teamId - получить данные о капитане команды (get)
+    токен не требуется
+
+    ////
+
+    http://localhost:5000/teams/teammembers/:teamId - получить данные об участниках команды (get)
+    токен не требуется
+
+    ////
 }
 
-EVENTS : {
-    ...
+CHATS : {
+    ////
+
+    http://localhost:5000/chat/ - создать чат (post)
+    {
+        "firstId": "64dace78c40e0cb3c2cb5d50",
+        "secondId": "64dace78c40e0cb3c2cb5d50"
+    }
+    токен не требуется
+
+    ////
+
+    http://localhost:5000/chat/:userId - получить данные о чатах, в которых состоит пользователь, требуется id пользователя (get)
+    токен не требуется
+
+    ////
+
+    http://localhost:5000/chat/find/:firstId/:secondId - получить данные о чате по двум id пользователей (get)
+    токен не требуется
+
+    ////
+}
+MESSAGES : {
+    ////
+
+     http://localhost:5000/message/ - создать сообщение (post)
+     {
+        "chatId": "64db4981fb756fc913956405",
+        "senderId": "64dace78c40e0cb3c2cb5d50",
+        "text": "preved"
+     }
+    токен не требуется
+
+    ////
+
+    http://localhost:5000/message/:chatId - получить все сообщения из чата, требуется id чата (get)
+    токен не требуется
+
+    ////
 }
