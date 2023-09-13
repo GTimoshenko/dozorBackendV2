@@ -12,83 +12,83 @@ class eventController {
 				return res.status(400).json({ message: 'Не удалось зарегистрировать событие.', errors })
 			}
 
-			const { name, description } = req.body
-			const {hostId} = req.params
+			const { name, description, questions } = req.body
+			const { hostId } = req.params
 
 			const eventCandidate = await Event.findOne()
 			const host = await User.findById(hostId)
 			if (eventCandidate) {
-				return res.status(400).json({ message: 'Событие с таким именем уже существует.' })
+				return res.status(400).json({ message: 'У вас уже есть активное событие.' })
 			}
 
-			const event = new Event({ name, description })
+			const event = new Event({ name, description, questions })
 			event.host = host
 			await event.save()
-			res.json({message: "Событие создано.", event})
+			res.json({ message: "Событие создано.", event })
 		} catch (e) {
 			console.log(e)
 			return res.status(403).json({ message: 'Не удалось создать событие.' })
 		}
 	}
 
-	async deleteEvent(req,res){
-		try{
-			const {hostId, eventId} = req.params
+	async deleteEvent(req, res) {
+		try {
+			const { hostId, eventId } = req.params
 
 			const host = await User.findById(hostId)
 			const event = await Event.findById(eventId)
 
-			if(host.name === event.host.name){
+			if (host.name === event.host.name) {
 				await Event.deleteOne(event)
-				res.json({message:"Событие удалено."})
+				res.json({ message: "Событие удалено." })
 			}
-		} catch(e) {
+		} catch (e) {
 			console.log(e)
-			res.status(400).json({message:"Не удалось удалить событие."})
+			res.status(400).json({ message: "Не удалось удалить событие." })
 		}
 	}
 
-	async addTeam(req,res) {
+	async addTeam(req, res) {
 		try {
-			const{hostId, eventId, teamId} = req.params
+			const { hostId, eventId, teamId } = req.params
 
 			const host = await User.findById(hostId)
 			const event = await Event.findById(eventId)
 			const team = await Team.findById(teamId)
 
-			if(host.name === event.host.name){
+			if (host.name === event.host.name) {
 				event.members.push(team)
 				await event.save()
 				team.isInEvent = 1
 				await team.save()
-				res.json({message:"Команда успешно добавлена.", event})
+				res.json({ message: "Команда успешно добавлена.", event })
 			}
-		} catch(e) {
+		} catch (e) {
 			console.log(e)
-			res.status(400).json({message:"Не удалось добавить команду."})
+			res.status(400).json({ message: "Не удалось добавить команду." })
 		}
 	}
 
-	async kickTeam(req,res) {
-		try{
-			const {hostId, eventId, teamId} = req.params
+	async kickTeam(req, res) {
+		try {
+			const { hostId, eventId, teamId } = req.params
 
 			const host = await User.findById(hostId)
 			const event = await Event.findById(eventId)
 			const team = await Team.findById(teamId)
 
-			if(host.name === event.host.name) {
+			if (host.name === event.host.name) {
 				const teamIndex = event.members.findIndex((team) => team._id.toString() === teamId)
-					event.members.splice(teamIndex, 1)
+				event.members.splice(teamIndex, 1)
 
-					await event.save()
+				await event.save()
 				team.isinEvent = 0
 				await team.save()
-				res.json({message: "Команда удалена.", team})
+				res.json({ message: "Команда удалена.", team })
 			}
-		} catch(e) {
+		} catch (e) {
 			console.log(e)
-			res.status(400).json({message:"Не удалось удалить команду."})
+			res.status(400).json({ message: "Не удалось удалить команду." })
 		}
 	}
 
@@ -101,37 +101,37 @@ class eventController {
 		}
 	}
 
-	async getEventMembers(req,res) {
+	async getEventMembers(req, res) {
 		try {
-			const {eventId} = req.params
+			const { eventId } = req.params
 
 			const candidate = await Event.findById(eventId)
 
-			if(!candidate) {
-				res.status(400).json({message : "Не удалось получить данные о коммандах"})
+			if (!candidate) {
+				res.status(400).json({ message: "Не удалось получить данные о коммандах" })
 			}
 
 			res.status(200).json(candidate.members)
-		} catch(e) {
+		} catch (e) {
 			console.log(e)
-			res.status(400).json({message: "Не удалось получить информацию о мероприятии"})
+			res.status(400).json({ message: "Не удалось получить информацию о мероприятии" })
 		}
 	}
 
-	async getEvent(req,res) {
+	async getEvent(req, res) {
 		try {
-			const {eventId} = req.params
+			const { eventId } = req.params
 
 			const candidate = await Event.findById(eventId)
 
-			if(!candidate) {
-				res.status(400).json({message: "Не сущесвует события с таким ID"})
+			if (!candidate) {
+				res.status(400).json({ message: "Не сущесвует события с таким ID" })
 			}
 
 			res.status(200).json(candidate)
-		} catch(e) {
+		} catch (e) {
 			console.log(e)
-			res.status(400).json({message : "Не удалось получить данные о событии"})
+			res.status(400).json({ message: "Не удалось получить данные о событии" })
 		}
 	}
 
