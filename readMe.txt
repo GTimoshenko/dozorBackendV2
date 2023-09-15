@@ -27,6 +27,21 @@ AUTHORIZATION : {
     http://localhost:5000/auth//user/:userId- получить данные об одном пользователе через его id (get)
     токен не требуется
 
+	////
+
+	http://localhost:5000/auth/:userId/resetpassword - запросить код для восстановления пароля (post)
+	{
+		"eMail" : "test@gmail.com"
+	}
+
+	////
+
+	http://localhost:5000/auth/:userId/newpassword - установить новый пароль (post)
+	{
+		"verificationCode" : "s6gp8h", 
+		"password1" : "asdasd",
+		"password2" : "asdasd"
+	}
 
 }
 
@@ -36,7 +51,8 @@ EVENTS : {
     http://localhost:5000/events/:hostId- создать событие, требуется id хооста (post)
     {
         "name": "dozor", (имя не должно быть пустым)
-        "description": "oogabooga"
+        "description": "oogabooga",
+		"questions": "dsadsadsa, dsadsadsa"
     }
     токен требуется! (роль админа, vip)
 
