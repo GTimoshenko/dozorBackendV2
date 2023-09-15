@@ -10,6 +10,10 @@ const mongoose = require('mongoose')
 class teamController {
 	async registerTeam(req, res) {
 		try {
+			const errors = validationResult(req)
+			if (!errors.isEmpty()) {
+				return res.status(400).json({ message: "Ошибка при создании команды.", errors })
+			}
 			const { capId } = req.params;
 			const { teamName, password } = req.body
 
@@ -65,8 +69,8 @@ class teamController {
 
 	async deleteTeam(req, res) {
 		try {
-			const { capId, teamId } = req.params
-
+			const { teamId } = req.params
+			const { capId } = req.body
 
 			const team = await Team.findById(teamId)
 			const capCandidate = await User.findById(capId);
@@ -82,7 +86,7 @@ class teamController {
 				res.status(200).json({ message: "Команда удалена." })
 			}
 			else {
-				res.json([capCandidate.name, team.captain.name])
+				res.status(400).json({ message: "Вы должны быть капитаном, чтобы удалить команду." })
 			}
 		} catch (e) {
 			console.log(e);
@@ -92,7 +96,8 @@ class teamController {
 
 	async kickMember(req, res) {
 		try {
-			const { capId, teamId, memberId } = req.params
+			const { memberId } = req.params
+			const { capId, teamId } = req.body
 
 			const memberCandidate = await User.findById(memberId)
 			const capCandidate = await User.findById(capId)
@@ -109,7 +114,7 @@ class teamController {
 					return res.status(200).json({ message: "Пользователь выгнан." })
 				}
 			}
-			res.json({ message: "Не удалось выгнать игрока." })
+			res.status(400).json({ message: "Вы должны быть капитаном, чтобы выгнать игрока." })
 
 		} catch (e) {
 			console.log(e)
@@ -127,55 +132,55 @@ class teamController {
 		}
 	}
 
-	async getTeam(req,res) {
+	async getTeam(req, res) {
 		try {
-			const {teamId} = req.params
+			const { teamId } = req.params
 
 			const candidate = await Team.findById(teamId)
 
-			if(!candidate) {
-				return res.status(400).json({message: "Команды с таким ID не существует"})
+			if (!candidate) {
+				return res.status(400).json({ message: "Команды с таким ID не существует" })
 			}
 
 			res.status(200).json(candidate)
-		} catch(e) {
+		} catch (e) {
 			console.log(e)
-			return res.json({message: "Не удалось получить данные об этой команде."})
+			return res.json({ message: "Не удалось получить данные об этой команде." })
 		}
 	}
 
-	async getTeamCaptain(req,res) {
-		try { 
-			const {teamId} = req.params
+	async getTeamCaptain(req, res) {
+		try {
+			const { teamId } = req.params
 
 			const candidate = await Team.findById(teamId)
 
-			if(!candidate) {
-				return res.json({message : "Комманды с таким ID не существует"})
+			if (!candidate) {
+				return res.json({ message: "Комманды с таким ID не существует" })
 			}
 
 			res.status(200).json(candidate.captain)
-		} catch(e) {
+		} catch (e) {
 			console.log(e)
-			res.status(400).json({message : "Не удалось получить капитана команды."})
+			res.status(400).json({ message: "Не удалось получить капитана команды." })
 		}
 	}
 
-	async getTeamMembers(req,res) {
-		try{
-		const {teamId} = req.params
+	async getTeamMembers(req, res) {
+		try {
+			const { teamId } = req.params
 
-		const candidate = await Team.findById(teamId)
+			const candidate = await Team.findById(teamId)
 
-		if(!candidate) {
-			res.status(400).json({message : "Команды с таким ID не существует."})
+			if (!candidate) {
+				res.status(400).json({ message: "Команды с таким ID не существует." })
+			}
+
+			res.status(200).json(candidate.members)
+		} catch (e) {
+			console.log(e)
+			res.status(400).json({ message: "Не удалось получить участников команды." })
 		}
-
-		res.status(200).json(candidate.members)
-	} catch(e) {
-		console.log(e)
-		res.status(400).json({message: "Не удалось получить участников команды."})
-	}
 	}
 }
 module.exports = new teamController();

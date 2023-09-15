@@ -3,9 +3,10 @@ AUTHORIZATION : {
 
     http://localhost:5000/auth/register - регистрация пользователя (post)
     {
-        "name": "user", (имя не должно быть пустым)
-        "password": "12345" (пароль должен быть от 4 до 12 символов)
-    }
+	"name" : "glebushnik",
+	"password" : "glebushnik",
+	"eMail" : "glebushnik@gmail.com"
+	}
     токен не требуется
 
     ////
@@ -24,7 +25,7 @@ AUTHORIZATION : {
 
     ////
 
-    http://localhost:5000/auth//user/:userId- получить данные об одном пользователе через его id (get)
+    http://localhost:5000/auth/user/:userId- получить данные об одном пользователе через его id (get)
     токен не требуется
 
 	////
@@ -58,18 +59,30 @@ EVENTS : {
 
     ////
 
-    http://localhost:5000/events/:hostId/delete/:eventId - удалить событие требуется id хоста и id события (post)
-    токен не требуется
+    http://localhost:5000/events/delete/:eventId - удалить событие требуется id хоста и id события (post)
+	{
+	"hostId" : "65048386200b40b2d9f5f9a8"
+	}
+	токен требуется! (роль админа, vip)
+
 
     ////
 
-    http://localhost:5000/events/:hostId/:eventId/add/:teamId - добавить команду в событие, требуется id хоста и id команды (post)
-    токен не требуется
+    http://localhost:5000/events/addteam/:eventId - добавить команду в событие, требуется id хоста и id команды (post)
+    {
+	"hostId" : "65048386200b40b2d9f5f9a8",
+	"teamId" : "64dca4e3a47557674b53b4c1"
+	}
+	токен требуется! (роль админа, vip)
 
     ////
 
-    http://localhost:5000/events/:hostId/:eventId/kickteam/:teamId - удалить команду из события, требуется id хоста и id команды (post)
-    токен не требуется
+    http://localhost:5000/events//kickteam/:eventId - удалить команду из события, требуется id хоста и id команды (post)
+    {
+	"hostId" : "65048386200b40b2d9f5f9a8",
+	"teamId" : "64dca4e3a47557674b53b4c1"
+	}
+	токен требуется! (роль админа, vip)
 
     ////
     
@@ -85,12 +98,17 @@ EVENTS : {
 
     http://localhost:5000/events/event/:eventId - получить данные об одном событии через id (get)
     токен не требуется
+
+	////
+
+	http://localhost:5000/events/eventhost/:eventId - получить данные об организаторе события через id (get)
+	токен не требуется
 }
 
 TEAMS : {
     ////
 
-    http://localhost:5000/teams/:capId - зарегистрировать команду, требуется id капитана (post)
+    http://localhost:5000/teams/new/:capId - зарегистрировать команду, требуется id капитана (post)
     {
         "teamName": "dozor", (имя не должно быть пустым)
         "password": "54321" (пароль должен быть от 4 до 12 символов)
@@ -107,13 +125,20 @@ TEAMS : {
     токен не требуется
     ////
     
-    http://localhost:5000/teams/:teamId/delete/:capId - удалить команду, требуется id капитана и команды (post)
-    токен не требуется
+    http://localhost:5000/teams/delete/:teamId - удалить команду, требуется id капитана и команды (post)
+    {
+	"capId" : "64c59eb68e28bb0fbc1142ea"
+	}
+	токен не требуется
 
     ////
 
-    http://localhost:5000/teams/:capId/:teamId/kickmember/:memberId - выгнать члена команды, требуется id капитана, команды и члена команды, которого требуется выгнать  (post)
-    токен не требуется
+    http://localhost:5000/teams/:capId/kick/:memberId' - выгнать члена команды, требуется id капитана, команды и члена команды, которого требуется выгнать  (post)
+    {
+	"capId" : "64c59eb68e28bb0fbc1142ea",
+	"teamId" : "65049fce3b1a64d0feaa6729"
+	}
+	токен не требуется
 
     ////
 

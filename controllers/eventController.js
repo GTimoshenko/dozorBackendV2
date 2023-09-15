@@ -33,7 +33,8 @@ class eventController {
 
 	async deleteEvent(req, res) {
 		try {
-			const { hostId, eventId } = req.params
+			const { eventId } = req.params
+			const { hostId } = req.body
 
 			const host = await User.findById(hostId)
 			const event = await Event.findById(eventId)
@@ -50,7 +51,8 @@ class eventController {
 
 	async addTeam(req, res) {
 		try {
-			const { hostId, eventId, teamId } = req.params
+			const { eventId } = req.params
+			const { hostId, teamId } = req.body
 
 			const host = await User.findById(hostId)
 			const event = await Event.findById(eventId)
@@ -71,7 +73,8 @@ class eventController {
 
 	async kickTeam(req, res) {
 		try {
-			const { hostId, eventId, teamId } = req.params
+			const { eventId } = req.params
+			const { hostId, teamId } = req.body
 
 			const host = await User.findById(hostId)
 			const event = await Event.findById(eventId)
@@ -132,6 +135,21 @@ class eventController {
 		} catch (e) {
 			console.log(e)
 			res.status(400).json({ message: "Не удалось получить данные о событии" })
+		}
+	}
+
+	async getEventHost(req, res) {
+		try {
+			const { eventId } = req.params
+			const candidate = await Event.findById(eventId)
+
+			if (!candidate) {
+				res.status(400).json({ message: "Не сущесвует события с таким ID" })
+			}
+			res.status(200).json(candidate.host)
+		} catch (e) {
+			console.log(e)
+			res.status(400).json({ message: "Не удалось получить данные об организаторе." })
 		}
 	}
 

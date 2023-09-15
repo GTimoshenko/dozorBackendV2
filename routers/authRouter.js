@@ -12,8 +12,12 @@ router.post('/register', [
 router.post('/login', controller.userLogin)
 router.get('/users', roleMiddleware(['admin']), controller.getUsers)
 router.get('/user/:userId', controller.getUser)
-router.post('/:userId/resetpassword', controller.resetPassword)
-router.post('/:userId/newpassword', [
+router.post('/user/:userId/resetpassword', [
+	check('eMail', "Введите корректный eMail.").isEmail(),
+	check('eMail', "Поле eMail не может быть пустым.").notEmpty()
+],
+	controller.resetPassword)
+router.post('/user/:userId/newpassword', [
 	check('password1', "Пароль не может быть короче 4 и длиннее 12 символов.").isLength({ min: 4, max: 12 }),
 	check('password2', "Пароль не может быть короче 4 и длиннее 12 символов.").isLength({ min: 4, max: 12 }),
 	check('verificationCode', "Код подтверждения пользователя не может быть пустым.").notEmpty()

@@ -34,7 +34,7 @@ class authController {
 			}
 			const { name, password, avatarUrl, eMail } = req.body
 
-			const candidate = await User.findOne({ name }) || await User.findOne({ eMail })
+			const candidate = await User.findOne({ name })
 			if (candidate) {
 				return res.status(400).json({ message: "Пользователь с таким именем уже существует." })
 			}
@@ -116,6 +116,12 @@ class authController {
 
 	async resetPassword(req, res) {
 		try {
+
+			const errors = validationResult(req)
+			if (!errors.isEmpty()) {
+				return res.status(400).json({ message: "Ошибка при восстановлении пароля.", errors })
+			}
+
 			const { eMail } = req.body
 			const { userId } = req.params
 
@@ -193,7 +199,7 @@ class authController {
         <div class="code">${otp}</div>
         <p>Этот код работает только один раз.</p>
         <footer>
-            <p>&copy; 2023 Ночной дозор</p>
+            <p>&copy; 2023 DOZOR PROJECT</p>
         </footer>
     </div>
 </body>
