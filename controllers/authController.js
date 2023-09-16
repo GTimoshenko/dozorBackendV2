@@ -44,12 +44,15 @@ class authController {
 			const user = new User({ name, password: hashPassword, avatarUrl: avatarUrl, eMail, roles: [userRole.value] })
 			await user.save()
 
+			const token = generateAccessToken(user._id, user.roles)
 			return res.json({
 				message: "Пользователь зарегистрирован.",
 				password,
 				avatarUrl,
 				name,
 				eMail,
+				id: user._id,
+				token,
 				roles: [userRole.value]
 			})
 		} catch (e) {
@@ -257,6 +260,47 @@ class authController {
 			}
 		} catch (e) {
 			res.status(400).json({ message: 'Ошибка создания нового пароля.', e })
+		}
+	}
+
+	async isTeamMember(req, res) {
+		try {
+			const { userId } = req.params;
+
+			const candidate = await User.findById(userId)
+
+			if (!candidate) {
+				res.status(400).json({ message: "Пользователя с этим ID не существует." })
+			}
+			if (candidate.teamName != "") {
+				const teamCandidate = await Team.findOne({ teamName: candidate.teamName })
+				if (teamCandidate) {
+					res.status(200).json(teamCandidate._id)
+				} else {
+					res.status(400).json({ message: "Такой команды не существует." })
+				}
+			} else {
+				res.status(200).json({ message: "Пользователь не состоит в комманде." })
+			}
+		} catch (e) {
+			res.status(400).json({ message: "Ошибка при получении сведений о команде", e })
+		}
+	}
+	async giveRole(req, res) {
+		try {
+			const { userId } = req.params
+			const { role } = req.body
+
+			const candidate = await User.findById(userId)
+			if (!candidate) {
+				res.status(400).json({ message: "Пользователя с таким ID не существует." })
+			}
+
+			candidate.roles = role;
+			await candidate.save()
+			res.status(200).json({ message: `Роль ${role} выдана` })
+		} catch (e) {
+			res.status(400).json({ message: "Не удалось выдать привилегию", e })
 		}
 	}
 }

@@ -11,7 +11,7 @@ const teamSchema = new Schema({
 	members: {
 		type: [userSchema],
 	},
-	isInEvent : {type: Boolean, required: true, default: false},
+	eventName: { type: String, default: "" },
 });
 
 module.exports = model('Team', teamSchema)

@@ -6,7 +6,7 @@ const userSchema = new Schema({
 	password: { type: String, required: true },
 	avatarUrl: { type: String, required: true, default: "defaultAvatar" },
 	roles: [{ type: String, ref: 'Role' }],
-	isTeamMember: { type: Boolean, required: true, default: 0 },
+	teamName: { type: String, default: "" },
 	verificationCode: { type: String, required: false, default: "" }
 })
 

@@ -61,13 +61,12 @@ class eventController {
 			if (host.name === event.host.name) {
 				event.members.push(team)
 				await event.save()
-				team.isInEvent = 1
+				team.eventName = event.name
 				await team.save()
 				res.json({ message: "Команда успешно добавлена.", event })
 			}
 		} catch (e) {
-			console.log(e)
-			res.status(400).json({ message: "Не удалось добавить команду." })
+			res.status(400).json({ message: "Не удалось добавить команду.", e })
 		}
 	}
 
@@ -85,7 +84,7 @@ class eventController {
 				event.members.splice(teamIndex, 1)
 
 				await event.save()
-				team.isinEvent = 0
+				team.eventName = ""
 				await team.save()
 				res.json({ message: "Команда удалена.", team })
 			}

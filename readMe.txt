@@ -43,7 +43,18 @@ AUTHORIZATION : {
 		"password1" : "asdasd",
 		"password2" : "asdasd"
 	}
+	
+	////
 
+	http://localhost:5000/auth/is-team-member/:userId - получить информацию об участии в команде (get)
+	токен не требуется
+
+	////
+
+	http://localhost:5000/auth/giverole/:userId - выдать привилегию (put)
+	{
+		"role" : "vip"
+	}
 }
 
 
@@ -157,10 +168,15 @@ TEAMS : {
 
     ////
 
-    http://localhost:5000/teams/teammembers/:teamId - получить данные об участниках команды (get)
+    http://localhost:5000/teams/team-members/:teamId - получить данные об участниках команды (get)
     токен не требуется
 
     ////
+
+	http://localhost:5000/teams/is-event-member/:teamId - получить данные об участии в событии(get)
+	токен не требуется
+
+	////
 }
 
 CHATS : {

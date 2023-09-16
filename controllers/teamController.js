@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
 const { secret } = require('../config')
 const mongoose = require('mongoose')
+const Event = require('../models/event')
 
 class teamController {
 	async registerTeam(req, res) {
@@ -19,8 +20,8 @@ class teamController {
 
 			const teamCandidate = await Team.findOne({ teamName })
 			const capObj = await User.findById(capId);
-			if (capObj.isTeamMember == 0) {
-				capObj.isTeamMember = 1;
+			if (capObj.teamName == "") {
+				capObj.teamName = teamName;
 				await capObj.save()
 				if (teamCandidate) {
 					return res.status(400).json({ message: "Команда с таким именем уже существует." })
@@ -54,7 +55,7 @@ class teamController {
 			if (team.password === password) {
 				team.members.push(user)
 				await team.save()
-				user.isTeamMember = 1;
+				user.teamName = team.teamName;
 				await user.save()
 
 				return res.json({ message: "Пользователь успешно добавлен в команду", team });
@@ -79,7 +80,7 @@ class teamController {
 				return res.json({ message: "Такой команды нет." })
 			}
 			if (capCandidate.name === team.captain.name) {
-				capCandidate.isTeamMember = 0
+				capCandidate.teamName = ""
 				await capCandidate.save()
 
 				await Team.deleteOne(team)
@@ -109,7 +110,7 @@ class teamController {
 					team.members.splice(memberIndex, 1)
 					await team.save()
 
-					memberCandidate.isTeamMember = 0
+					memberCandidate.teamName = ""
 					await memberCandidate.save()
 					return res.status(200).json({ message: "Пользователь выгнан." })
 				}
@@ -180,6 +181,30 @@ class teamController {
 		} catch (e) {
 			console.log(e)
 			res.status(400).json({ message: "Не удалось получить участников команды." })
+		}
+	}
+
+	async isEventMember(req, res) {
+		try {
+			const { teamId } = req.params;
+
+			const candidate = await Team.findById(teamId)
+
+			if (!candidate) {
+				res.status(400).json({ message: "Команды с этим ID не существует." })
+			}
+
+			if (candidate.eventName != "") {
+				const eventCandidate = await Event.findOne({ name: candidate.eventName })
+
+				if (eventCandidate) {
+					res.status(200).json(eventCandidate._id)
+				} else {
+					res.status(400).json({ message: "События с таким ID не существует" })
+				}
+			}
+		} catch (e) {
+			res.status(400).json({ message: "Ошибка при получении данных о событии", e })
 		}
 	}
 }

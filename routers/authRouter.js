@@ -23,5 +23,7 @@ router.post('/user/:userId/newpassword', [
 	check('verificationCode', "Код подтверждения пользователя не может быть пустым.").notEmpty()
 ],
 	controller.createNewPassword)
+router.get('/is-team-member/:userId', controller.isTeamMember)
+router.put('/giverole/:userId', roleMiddleware(['admin']), controller.giveRole)
 
 module.exports = router;

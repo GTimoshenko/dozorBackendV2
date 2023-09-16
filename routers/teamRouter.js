@@ -15,5 +15,6 @@ router.post('/kick/:memberId', controller.kickMember)
 router.get('/all', controller.getTeams)
 router.get('/team/:teamId', controller.getTeam)
 router.get('/teamcap/:teamId', controller.getTeamCaptain)
-router.get('/teammembers/:teamId', controller.getTeamMembers)
+router.get('/team-members/:teamId', controller.getTeamMembers)
+router.get('/is-event-member/:teamId', controller.isEventMember)
 module.exports = router;
