@@ -1,6 +1,7 @@
 const User = require('../models/user')
 const Role = require('../models/role')
 const Team = require('../models/team')
+const Task = require('../models/task')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
@@ -205,6 +206,46 @@ class teamController {
 			}
 		} catch (e) {
 			res.status(400).json({ message: "Ошибка при получении данных о событии", e })
+		}
+	}
+
+	async sendAnswer(req, res) {
+		try {
+			const { eventId } = req.params
+			const { answer, taskId, teamId } = req.body
+
+			const candidate = await Event.findById(eventId)
+			const team = await Team.findById(teamId)
+			const task = await Task.findById(taskId)
+			if (!candidate) {
+				res.status(400).json({ message: "События с этим ID не существует." })
+			}
+			console.log(task.answer)
+			if (task.answer == answer) {
+				task.winner = team.teamName
+				await task.save()
+
+				await candidate.save()
+				res.status(200).json({ message: "Правильный ответ." })
+			} else {
+				res.status(200).json({ message: "Неправильный ответ." })
+			}
+		} catch (e) {
+			res.status(400).json(e.message)
+		}
+	}
+
+	async getQuestionWinner(req, res) {
+		try {
+			const { taskId } = req.params
+			const task = await Task.findById(taskId)
+			if (!task) {
+				res.status(400).json({ message: "Вопроса с таким ID не существует" })
+			}
+
+			res.status(200).json({ message: `Победитель в вопросе - команда ${task.winner}` })
+		} catch (e) {
+			res.status(400).json({ message: "Ошибка при получении данных о победителе в вопросе.", e })
 		}
 	}
 }

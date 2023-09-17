@@ -12,6 +12,8 @@ router.post('/new/:capId', [
 router.post('/delete/:teamId', controller.deleteTeam)
 router.post('/invite/:memberId', controller.addTeamMember)
 router.post('/kick/:memberId', controller.kickMember)
+router.post('/sendanswer/:eventId', controller.sendAnswer)
+router.get('/get-task-winner/:taskId', controller.getQuestionWinner)
 router.get('/all', controller.getTeams)
 router.get('/team/:teamId', controller.getTeam)
 router.get('/teamcap/:teamId', controller.getTeamCaptain)

@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
-const user = require('./user');
 const { userSchema } = require('./user')
+const { taskSchema } = require('./task')
 
 const teamSchema = new Schema({
 	captain: {
@@ -12,6 +12,7 @@ const teamSchema = new Schema({
 		type: [userSchema],
 	},
 	eventName: { type: String, default: "" },
+	tasks: { type: [taskSchema] }
 });
 
 module.exports = model('Team', teamSchema)

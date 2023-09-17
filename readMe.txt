@@ -63,8 +63,7 @@ EVENTS : {
     http://localhost:5000/events/:hostId- создать событие, требуется id хооста (post)
     {
         "name": "dozor", (имя не должно быть пустым)
-        "description": "oogabooga",
-		"questions": "dsadsadsa, dsadsadsa"
+        "description": "oogabooga"
     }
     токен требуется! (роль админа, vip)
 
@@ -114,6 +113,18 @@ EVENTS : {
 
 	http://localhost:5000/events/eventhost/:eventId - получить данные об организаторе события через id (get)
 	токен не требуется
+
+	////
+
+	http://localhost:5000/events/newtask/:eventId - отправить задание (post)
+	токен не требуется
+	{
+	"question" : "dsadsad",
+	"clue" : "dsadsadsa", 
+	"answer" : "dsadsad"
+	}
+
+	////
 }
 
 TEAMS : {
@@ -175,6 +186,22 @@ TEAMS : {
 
 	http://localhost:5000/teams/is-event-member/:teamId - получить данные об участии в событии(get)
 	токен не требуется
+
+	////
+
+	http://localhost:5000/teams/get-task-winner/:taskId - получить данные о победителе в вопросе(get)
+	токен не требуется 
+
+	////
+
+	http://localhost:5000/teams/sendanswer/:eventId - отправить ответ на вопрос(post)
+	токен не требуется 
+
+	{
+	"answer" : "dsadsad",
+	"taskId" : "6507494ba2e4cb6b52baf18e",
+	"teamId" : "6507224aa9e97c59ff0689df"
+	}
 
 	////
 }

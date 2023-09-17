@@ -2,6 +2,7 @@ const { createCheckSchema } = require('express-validator/src/middlewares/schema'
 const Event = require('../models/event')
 const User = require('../models/user')
 const Team = require('../models/team')
+const Task = require('../models/task')
 const { validationResult } = require('express-validator')
 
 class eventController {
@@ -12,7 +13,7 @@ class eventController {
 				return res.status(400).json({ message: 'Не удалось зарегистрировать событие.', errors })
 			}
 
-			const { name, description, questions } = req.body
+			const { name, description } = req.body
 			const { hostId } = req.params
 
 			const eventCandidate = await Event.findOne()
@@ -21,7 +22,7 @@ class eventController {
 				return res.status(400).json({ message: 'У вас уже есть активное событие.' })
 			}
 
-			const event = new Event({ name, description, questions })
+			const event = new Event({ name, description })
 			event.host = host
 			await event.save()
 			res.json({ message: "Событие создано.", event })
@@ -151,6 +152,27 @@ class eventController {
 			res.status(400).json({ message: "Не удалось получить данные об организаторе." })
 		}
 	}
+
+	async sendTask(req, res) {
+		try {
+			const { eventId } = req.params
+			const { question, clue, answer } = req.body
+			const candidate = await Event.findById(eventId)
+
+			const task = new Task({ question, clue, answer })
+			await task.save()
+			if (!candidate) {
+				res.status(400).json({ message: "Не сущесвует события с таким ID" })
+			}
+			candidate.questions.push(task)
+			await candidate.save()
+			res.status(200).json({ message: "Задание успешно выдано", task })
+		} catch (e) {
+			res.status(400).json({ message: "Ошибка при отправке вопроса", e })
+		}
+	}
+
+
 
 }
 

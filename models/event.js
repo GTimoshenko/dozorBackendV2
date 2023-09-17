@@ -1,5 +1,6 @@
 const { Schema, model } = require('mongoose')
 const { teamSchema } = require('../models/team')
+const { taskSchema } = require('../models/task')
 
 const eventSchema = new Schema({
 	host: {
@@ -8,7 +9,7 @@ const eventSchema = new Schema({
 	name: { type: String, unique: true, required: true },
 	description: { type: String, required: true },
 	members: { type: [teamSchema] },
-	questions: { type: [String], required: true }
+	questions: { type: [taskSchema] }
 })
 
 module.exports = model('Event', eventSchema)
