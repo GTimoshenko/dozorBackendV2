@@ -16,7 +16,7 @@ class eventController {
 			const { name, description } = req.body
 			const { hostId } = req.params
 
-			const eventCandidate = await Event.findOne()
+			const eventCandidate = await Event.findOne({name})
 			const host = await User.findById(hostId)
 			if (eventCandidate) {
 				return res.status(400).json({ message: 'У вас уже есть активное событие.' })
@@ -60,11 +60,15 @@ class eventController {
 			const team = await Team.findById(teamId)
 
 			if (host.name === event.host.name) {
+				if(team.eventName != ""){
 				event.members.push(team)
 				await event.save()
 				team.eventName = event.name
 				await team.save()
 				res.json({ message: "Команда успешно добавлена.", event })
+				} else {
+					res.status(400).json({message : "Эта команда уже находится в событии."}, team.eventName)
+				}
 			}
 		} catch (e) {
 			res.status(400).json({ message: "Не удалось добавить команду.", e })
@@ -172,7 +176,23 @@ class eventController {
 		}
 	}
 
+	async getEventById(req,res) {
+		try {
+			const {teamId} = req.params
+			const team = await Team.findById(teamId)
 
+			if(!team) {
+				res.status(400).json({message : "Комманды с таким ID не существует"})
+			}
+			
+			if (team.eventName != "")
+			res.status(200).json(team.eventName)
+			else 
+			res.status(200).json({message : "Эта команда пока не участвует в событиях."})
+		} catch(e) {
+			res.status(400).json({message : "Не удалось получить данные об этой команде."})
+		}
+	}
 
 }
 

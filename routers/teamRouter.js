@@ -19,4 +19,5 @@ router.get('/team/:teamId', controller.getTeam)
 router.get('/teamcap/:teamId', controller.getTeamCaptain)
 router.get('/team-members/:teamId', controller.getTeamMembers)
 router.get('/is-event-member/:teamId', controller.isEventMember)
+router.get('/get-team-by-id/:userId', controller.getTeamById)
 module.exports = router;

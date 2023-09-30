@@ -54,12 +54,16 @@ class teamController {
 			}
 
 			if (team.password === password) {
+				if(user.teamName!=""){
 				team.members.push(user)
 				await team.save()
 				user.teamName = team.teamName;
 				await user.save()
 
 				return res.json({ message: "Пользователь успешно добавлен в команду", team });
+				} else {
+					return res.status(400).json({message: "Этот пользователь уже находится в команде."}, user.teamName)
+				} 
 			} else {
 				return res.status(200).json({ message: "Неверный пароль.", password });
 			}
@@ -194,7 +198,7 @@ class teamController {
 			if (!candidate) {
 				res.status(400).json({ message: "Команды с этим ID не существует." })
 			}
-
+			console.log(candidate.eventName)
 			if (candidate.eventName != "") {
 				const eventCandidate = await Event.findOne({ name: candidate.eventName })
 
@@ -203,7 +207,10 @@ class teamController {
 				} else {
 					res.status(400).json({ message: "События с таким ID не существует" })
 				}
+			} else {
+				res.status(200).json({message : "Эта команда пока не участвует ни в каких событиях."})
 			}
+
 		} catch (e) {
 			res.status(400).json({ message: "Ошибка при получении данных о событии", e })
 		}
@@ -246,6 +253,24 @@ class teamController {
 			res.status(200).json({ message: `Победитель в вопросе - команда ${task.winner}` })
 		} catch (e) {
 			res.status(400).json({ message: "Ошибка при получении данных о победителе в вопросе.", e })
+		}
+	}
+
+	async getTeamById(req,res) {
+		try {
+			const {userId} = req.params;
+			const user = await User.findById(userId)
+
+			if(!user) {
+				res.status(400).json({message : "Пользователя с таким ID не существует."})
+			}
+
+			if(user.teamName!="")
+			res.status(200).json(user.teamName);
+			else
+			res.status(200).json({message : "Этот пользователь пока не находится ни в какой команде.z"}) 
+		} catch(e) {
+			res.status(400).json({message : "Ошибка при получении данных о команде игрока."})
 		}
 	}
 }

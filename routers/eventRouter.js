@@ -17,4 +17,5 @@ router.get('/all', controller.getEvents)
 router.get('/eventmembers/:eventId', controller.getEventMembers)
 router.get('/event/:eventId', controller.getEvent)
 router.get('/eventhost/:eventId', controller.getEventHost)
+router.get('/get-event-by-id/:teamId', controller.getEventById)
 module.exports = router;
