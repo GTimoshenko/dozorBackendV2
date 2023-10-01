@@ -60,15 +60,18 @@ class eventController {
 			const team = await Team.findById(teamId)
 
 			if (host.name === event.host.name) {
-				if(team.eventName != ""){
+				if(team.isEventMember ==0){
+				team.isEventMember = 1
 				event.members.push(team)
 				await event.save()
 				team.eventName = event.name
 				await team.save()
 				res.json({ message: "Команда успешно добавлена.", event })
 				} else {
-					res.status(400).json({message : "Эта команда уже находится в событии."}, team.eventName)
+					res.status(400).json({message : `Эта команда уже находится в событии ${event.name}`})
 				}
+			} else {
+				res.status(200).json({message : "Данный пользователь не является организатором этого мероприятия."})
 			}
 		} catch (e) {
 			res.status(400).json({ message: "Не удалось добавить команду.", e })
@@ -90,8 +93,12 @@ class eventController {
 
 				await event.save()
 				team.eventName = ""
+				team.isEventMember = 0
 				await team.save()
 				res.json({ message: "Команда удалена.", team })
+			}
+			else {
+				res.json({message : "Данный пользователь не является организатором этого мероприятия."})
 			}
 		} catch (e) {
 			console.log(e)

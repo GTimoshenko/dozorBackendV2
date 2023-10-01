@@ -23,6 +23,7 @@ class teamController {
 			const capObj = await User.findById(capId);
 			if (capObj.teamName == "") {
 				capObj.teamName = teamName;
+				capObj.isTeamMember = 1
 				await capObj.save()
 				if (teamCandidate) {
 					return res.status(400).json({ message: "Команда с таким именем уже существует." })
@@ -54,15 +55,15 @@ class teamController {
 			}
 
 			if (team.password === password) {
-				if(user.teamName!=""){
+				if(user.isTeamMember == 0){
+				user.isTeamMember = 1
 				team.members.push(user)
 				await team.save()
 				user.teamName = team.teamName;
 				await user.save()
-
 				return res.json({ message: "Пользователь успешно добавлен в команду", team });
 				} else {
-					return res.status(400).json({message: "Этот пользователь уже находится в команде."}, user.teamName)
+					return res.status(400).json({message: `Этот пользователь уже находится в команде ${user.teamName}`})
 				} 
 			} else {
 				return res.status(200).json({ message: "Неверный пароль.", password });

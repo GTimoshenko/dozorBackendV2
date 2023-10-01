@@ -12,7 +12,8 @@ const teamSchema = new Schema({
 		type: [userSchema],
 	},
 	eventName: { type: String, default: "" },
-	tasks: { type: [taskSchema] }
+	tasks: { type: [taskSchema] },
+	isEventMember : {type: Boolean, default: 0}
 });
 
 module.exports = model('Team', teamSchema)

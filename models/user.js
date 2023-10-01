@@ -7,7 +7,8 @@ const userSchema = new Schema({
 	avatarUrl: { type: String, required: true, default: "defaultAvatar" },
 	roles: [{ type: String, ref: 'Role' }],
 	teamName: { type: String, default: "" },
-	verificationCode: { type: String, required: false, default: "" }
+	verificationCode: { type: String, required: false, default: "" },
+	isTeamMember : {type: Boolean, default: 0}
 })
 
 module.exports = model('User', userSchema)
