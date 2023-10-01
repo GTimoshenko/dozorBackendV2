@@ -257,22 +257,5 @@ class teamController {
 		}
 	}
 
-	async getTeamById(req,res) {
-		try {
-			const {userId} = req.params;
-			const user = await User.findById(userId)
-
-			if(!user) {
-				res.status(400).json({message : "Пользователя с таким ID не существует."})
-			}
-
-			if(user.teamName!="")
-			res.status(200).json(user.teamName);
-			else
-			res.status(200).json({message : "Этот пользователь пока не находится ни в какой команде.z"}) 
-		} catch(e) {
-			res.status(400).json({message : "Ошибка при получении данных о команде игрока."})
-		}
-	}
 }
 module.exports = new teamController();
