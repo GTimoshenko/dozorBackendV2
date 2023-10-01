@@ -25,5 +25,6 @@ router.post('/user/:userId/newpassword', [
 	controller.createNewPassword)
 router.get('/is-team-member/:userId', controller.isTeamMember)
 router.put('/giverole/:userId', roleMiddleware(['admin']), controller.giveRole)
+router.get('/get-team-by-id/:userId', controller.getTeamById)
 
 module.exports = router;

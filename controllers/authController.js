@@ -303,6 +303,31 @@ class authController {
 			res.status(400).json({ message: "Не удалось выдать привилегию", e })
 		}
 	}
+
+	async getTeamById(req,res) {
+		try {
+			const {userId} = req.params;
+			const user = await User.findById(userId)
+
+			if(!user) {
+				res.status(400).json({message : "Пользователя с таким ID не существует."})
+			}
+
+			if(user.teamName!=""){
+			const team = await Team.findOne({teamName : user.teamName})
+
+			if(!team) {
+				res.status(400).json({message : "Команды с таким названием не существует."})
+			}
+
+			res.status(200).json(team);
+		}
+			else
+			res.status(200).json({message : "Этот пользователь пока не находится ни в какой команде.z"}) 
+		} catch(e) {
+			res.status(400).json({message : "Ошибка при получении данных о команде игрока."})
+		}
+	}
 }
 
 module.exports = new authController();
