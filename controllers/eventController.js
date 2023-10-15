@@ -125,7 +125,7 @@ class eventController {
 			if (!candidate) {
 				res.status(400).json({ message: "Не удалось получить данные о коммандах" })
 			}
-			candidate
+
 			res.status(200).json(candidate.members)
 		} catch (e) {
 			console.log(e)
