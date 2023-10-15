@@ -3,6 +3,7 @@ const Event = require('../models/event')
 const User = require('../models/user')
 const Team = require('../models/team')
 const Task = require('../models/task')
+const Timer = require('../models/timer')
 const { validationResult } = require('express-validator')
 
 class eventController {
@@ -16,19 +17,19 @@ class eventController {
 			const { name, description } = req.body
 			const { hostId } = req.params
 
-			const eventCandidate = await Event.findOne({name})
+			const eventCandidate = await Event.findOne({ name })
 			const host = await User.findById(hostId)
 			if (eventCandidate) {
 				return res.status(400).json({ message: 'У вас уже есть активное событие.' })
 			}
 
-			const event = new Event({ name, description })
+			const event = new Event({ name, description, })
 			event.host = host
 			await event.save()
 			res.json({ message: "Событие создано.", event })
 		} catch (e) {
 			console.log(e)
-			return res.status(403).json({ message: 'Не удалось создать событие.' })
+			return res.status(403).json({ message: 'Не удалось создать событие.', e })
 		}
 	}
 
@@ -60,18 +61,18 @@ class eventController {
 			const team = await Team.findById(teamId)
 
 			if (host.name === event.host.name) {
-				if(team.isEventMember ==0){
-				team.isEventMember = 1
-				event.members.push(team)
-				await event.save()
-				team.eventName = event.name
-				await team.save()
-				res.json({ message: "Команда успешно добавлена.", event })
+				if (team.isEventMember == 0) {
+					team.isEventMember = 1
+					event.members.push(team)
+					await event.save()
+					team.eventName = event.name
+					await team.save()
+					res.json({ message: "Команда успешно добавлена.", event })
 				} else {
-					res.status(400).json({message : `Эта команда уже находится в событии ${event.name}`})
+					res.status(400).json({ message: `Эта команда уже находится в событии ${event.name}` })
 				}
 			} else {
-				res.status(200).json({message : "Данный пользователь не является организатором этого мероприятия."})
+				res.status(200).json({ message: "Данный пользователь не является организатором этого мероприятия." })
 			}
 		} catch (e) {
 			res.status(400).json({ message: "Не удалось добавить команду.", e })
@@ -98,7 +99,7 @@ class eventController {
 				res.json({ message: "Команда удалена.", team })
 			}
 			else {
-				res.json({message : "Данный пользователь не является организатором этого мероприятия."})
+				res.json({ message: "Данный пользователь не является организатором этого мероприятия." })
 			}
 		} catch (e) {
 			console.log(e)
@@ -124,7 +125,7 @@ class eventController {
 			if (!candidate) {
 				res.status(400).json({ message: "Не удалось получить данные о коммандах" })
 			}
-
+			candidate
 			res.status(200).json(candidate.members)
 		} catch (e) {
 			console.log(e)
@@ -183,26 +184,83 @@ class eventController {
 		}
 	}
 
-	async getEventById(req,res) {
+	async getEventById(req, res) {
 		try {
-			const {teamId} = req.params
+			const { teamId } = req.params
 			const team = await Team.findById(teamId)
 
-			if(!team) {
-				res.status(400).json({message : "Комманды с таким ID не существует"})
+			if (!team) {
+				res.status(400).json({ message: "Комманды с таким ID не существует" })
 			}
-			
+
 			if (team.eventName != "")
-			res.status(200).json(team.eventName)
-			else 
-			res.status(200).json({message : "Эта команда пока не участвует в событиях."})
-		} catch(e) {
-			res.status(400).json({message : "Не удалось получить данные об этой команде."})
+				res.status(200).json(team.eventName)
+			else
+				res.status(200).json({ message: "Эта команда пока не участвует в событиях." })
+		} catch (e) {
+			res.status(400).json({ message: "Не удалось получить данные об этой команде." })
 		}
 	}
 
-	
+	async setTimer(req, res) {
+		try {
+			const { hr, min, sec, day, yr, mnt } = req.body
+			const { eventId } = req.params
+			const timer = new Timer({ hr, min, sec, day, yr, mnt })
+			await timer.save()
+			const event = await Event.findById(eventId)
 
+			if (!event) {
+				res.status(400).json({ message: "Не существует события с таким ID" })
+			}
+
+			event.timer = timer
+			await event.save()
+			res.status(200).json(event.timer)
+
+		} catch (e) {
+			res.status(400).json(e.message)
+		}
+	}
+
+	async getTimer(req, res) {
+		try {
+			const { eventId } = req.params
+
+			const event = await Event.findById(eventId)
+
+			if (!event) {
+				res.status(400).json({ message: "Не существует события с таким ID" })
+			}
+
+			const timer = await Timer.findById(event.timer)
+			if (!timer) {
+				res.status(400).json({ message: "У события не установлен таймер" })
+			}
+
+			res.status(200).json(timer)
+		} catch (e) {
+			res.status(400).json({ message: "Не получилось получить данные о событии" })
+		}
+	}
+
+	async pushPhoto(req, res) {
+		try {
+			const { photo } = req.body
+			const { eventId } = req.params
+
+			const event = await Event.findById(eventId)
+			if (!event) {
+				res.status(400).json({ message: "Не существует события с таким ID" })
+			}
+
+			event.photos.push(photo)
+			await event.save()
+			res.status(200).json({ message: `Фото ${photo} успешно добавлено в событие.` })
+		} catch (e) {
+			res.status(400).json({ message: "Не удалось добавить фото" })
+		}
+	}
 }
 
 module.exports = new eventController();

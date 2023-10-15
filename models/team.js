@@ -13,7 +13,8 @@ const teamSchema = new Schema({
 	},
 	eventName: { type: String, default: "" },
 	tasks: { type: [taskSchema] },
-	isEventMember : {type: Boolean, default: 0}
+	isEventMember: { type: Boolean, default: 0 },
+	score: { type: Number, default: 0 }
 });
 
 module.exports = model('Team', teamSchema)

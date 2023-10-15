@@ -55,16 +55,16 @@ class teamController {
 			}
 
 			if (team.password === password) {
-				if(user.isTeamMember == 0){
-				user.isTeamMember = 1
-				team.members.push(user)
-				await team.save()
-				user.teamName = team.teamName;
-				await user.save()
-				return res.json({ message: "Пользователь успешно добавлен в команду", team });
+				if (user.isTeamMember == 0) {
+					user.isTeamMember = 1
+					team.members.push(user)
+					await team.save()
+					user.teamName = team.teamName;
+					await user.save()
+					return res.json({ message: "Пользователь успешно добавлен в команду", team });
 				} else {
-					return res.status(400).json({message: `Этот пользователь уже находится в команде ${user.teamName}`})
-				} 
+					return res.status(400).json({ message: `Этот пользователь уже находится в команде ${user.teamName}` })
+				}
 			} else {
 				return res.status(200).json({ message: "Неверный пароль.", password });
 			}
@@ -209,7 +209,7 @@ class teamController {
 					res.status(400).json({ message: "События с таким ID не существует" })
 				}
 			} else {
-				res.status(200).json({message : "Эта команда пока не участвует ни в каких событиях."})
+				res.status(200).json({ message: "Эта команда пока не участвует ни в каких событиях." })
 			}
 
 		} catch (e) {
@@ -228,12 +228,11 @@ class teamController {
 			if (!candidate) {
 				res.status(400).json({ message: "События с этим ID не существует." })
 			}
-			console.log(task.answer)
 			if (task.answer == answer) {
 				task.winner = team.teamName
 				await task.save()
-
 				await candidate.save()
+				team.score++
 				res.status(200).json({ message: "Правильный ответ." })
 			} else {
 				res.status(200).json({ message: "Неправильный ответ." })

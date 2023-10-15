@@ -13,9 +13,12 @@ router.post('/delete/:eventId', roleMiddleware(['vip', 'admin']), controller.del
 router.post('/addteam/:eventId', roleMiddleware(['vip', 'admin']), controller.addTeam)
 router.post('/kickteam/:eventId', roleMiddleware(['vip', 'admin']), controller.kickTeam)
 router.post('/newtask/:eventId', controller.sendTask)
+router.post('/settimer/:eventId', controller.setTimer)
+router.post('/pushphoto/:eventId', controller.pushPhoto)
 router.get('/all', controller.getEvents)
 router.get('/eventmembers/:eventId', controller.getEventMembers)
 router.get('/event/:eventId', controller.getEvent)
 router.get('/eventhost/:eventId', controller.getEventHost)
 router.get('/get-event-by-id/:teamId', controller.getEventById)
+router.get('/gettimer/:eventId', controller.getTimer)
 module.exports = router;
