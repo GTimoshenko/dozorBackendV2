@@ -15,6 +15,7 @@ router.post('/kickteam/:eventId', roleMiddleware(['vip', 'admin']), controller.k
 router.post('/newtask/:eventId', controller.sendTask)
 router.post('/settimer/:eventId', controller.setTimer)
 router.post('/pushphoto/:eventId', controller.pushPhoto)
+router.get('/getranked/:eventId',controller.getTeamRanked)
 router.get('/all', controller.getEvents)
 router.get('/eventmembers/:eventId', controller.getEventMembers)
 router.get('/event/:eventId', controller.getEvent)

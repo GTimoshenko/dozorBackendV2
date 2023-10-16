@@ -261,6 +261,39 @@ class eventController {
 			res.status(400).json({ message: "Не удалось добавить фото" })
 		}
 	}
+
+	async getTeamRanked(req,res) {
+		try {
+			const {eventId} = req.params
+
+			const event = await Event.findById(eventId)
+			if(!event) {
+				res.json({message : "Не удалось найти"})
+			}
+
+			let a = []
+			a = event.members
+
+			let arr = []
+			arr = a.map((x)=> x._id);
+
+			let tempArr = []
+			for(let i = 0 ; i < arr.length; i++) {
+				let temp = await Team.findById(arr[i])
+				tempArr.push(temp)
+			}
+			tempArr.sort((a,b)=>a.score < b.score ? 1 : -1)
+
+			let resArr = []
+
+			for(let i = 0 ; i < tempArr.length; i++) {
+				resArr.push({'teamName': tempArr[i].teamName, 'score': tempArr[i].score})
+			}
+			res.json(resArr)
+		} catch(e) {
+			res.status(400).json(e.message)
+		}
+	}
 }
 
 module.exports = new eventController();
