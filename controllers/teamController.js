@@ -132,6 +132,7 @@ class teamController {
 	async getTeams(req, res) {
 		try {
 			const teams = await Team.find()
+			teams.sort((a, b) => a.score < b.score ? 1 : -1)
 			return res.json(teams)
 		} catch (e) {
 			console.log(e)

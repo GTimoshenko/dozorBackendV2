@@ -202,21 +202,42 @@ class eventController {
 		}
 	}
 
-	async setTimer(req, res) {
+	async setStart(req, res) {
 		try {
-			const { hr, min, sec, day, yr, mnt } = req.body
+			const { hr, min, sec, day, mnt, yr } = req.body
 			const { eventId } = req.params
-			const timer = new Timer({ hr, min, sec, day, yr, mnt })
-			await timer.save()
+			const start = new Timer({ hr, min, sec, day, mnt, yr })
+			await start.save()
 			const event = await Event.findById(eventId)
 
 			if (!event) {
 				res.status(400).json({ message: "Не существует события с таким ID" })
 			}
 
-			event.timer = timer
+			event.start = start
 			await event.save()
-			res.status(200).json(event.timer)
+			res.status(200).json(event.start)
+
+		} catch (e) {
+			res.status(400).json(e.message)
+		}
+	}
+
+	async setEnd(req, res) {
+		try {
+			const { hr, min, sec, day, mnt, yr } = req.body
+			const { eventId } = req.params
+			const end = new Timer({ hr, min, sec, day, mnt, yr })
+			await end.save()
+			const event = await Event.findById(eventId)
+
+			if (!event) {
+				res.status(400).json({ message: "Не существует события с таким ID" })
+			}
+
+			event.end = end
+			await event.save()
+			res.status(200).json(event.end)
 
 		} catch (e) {
 			res.status(400).json(e.message)
@@ -233,12 +254,16 @@ class eventController {
 				res.status(400).json({ message: "Не существует события с таким ID" })
 			}
 
-			const timer = await Timer.findById(event.timer)
-			if (!timer) {
+			const start = await Timer.findById(event.start)
+			if (!start) {
 				res.status(400).json({ message: "У события не установлен таймер" })
 			}
 
-			res.status(200).json(timer)
+			const end = await Timer.findById(event.end)
+			if (!end) {
+				res.status(400).json({ message: "У события не установлен таймер" })
+			}
+			res.status(200).json({ "Начало события": start, "Конец события": end })
 		} catch (e) {
 			res.status(400).json({ message: "Не получилось получить данные о событии" })
 		}
@@ -262,35 +287,35 @@ class eventController {
 		}
 	}
 
-	async getTeamRanked(req,res) {
+	async getTeamRanked(req, res) {
 		try {
-			const {eventId} = req.params
+			const { eventId } = req.params
 
 			const event = await Event.findById(eventId)
-			if(!event) {
-				res.json({message : "Не удалось найти"})
+			if (!event) {
+				res.status(400).json({ message: "Не существует события с таким ID" })
 			}
 
-			let a = []
-			a = event.members
+			let teams = []
+			teams = event.members
 
-			let arr = []
-			arr = a.map((x)=> x._id);
+			let teamIds = []
+			teamIds = teams.map((x) => x._id);
 
-			let tempArr = []
-			for(let i = 0 ; i < arr.length; i++) {
-				let temp = await Team.findById(arr[i])
-				tempArr.push(temp)
+			let allTeams = []
+			for (let i = 0; i < teamIds.length; i++) {
+				let temp = await Team.findById(teamIds[i])
+				allTeams.push(temp)
 			}
-			tempArr.sort((a,b)=>a.score < b.score ? 1 : -1)
+			allTeams.sort((a, b) => a.score < b.score ? 1 : -1)
 
-			let resArr = []
+			let sortedTeams = []
 
-			for(let i = 0 ; i < tempArr.length; i++) {
-				resArr.push({'teamName': tempArr[i].teamName, 'score': tempArr[i].score})
+			for (let i = 0; i < allTeams.length; i++) {
+				sortedTeams.push({ 'teamName': allTeams[i].teamName, 'score': allTeams[i].score })
 			}
-			res.json(resArr)
-		} catch(e) {
+			res.status(200).json(sortedTeams)
+		} catch (e) {
 			res.status(400).json(e.message)
 		}
 	}

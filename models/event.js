@@ -12,7 +12,8 @@ const eventSchema = new Schema({
 	description: { type: String, required: true },
 	members: { type: [teamSchema] },
 	questions: { type: [taskSchema] },
-	timer: { type: Schema.Types.ObjectId, ref: 'Timer' },
+	start: { type: Schema.Types.ObjectId, ref: 'Timer' },
+	end: { type: Schema.Types.ObjectId, ref: 'Timer' },
 	photos: { type: [String] },
 
 })
