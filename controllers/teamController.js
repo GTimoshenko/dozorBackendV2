@@ -32,7 +32,7 @@ class teamController {
 				const team = new Team({ teamName, password })
 				team.captain = capObj;
 				await team.save()
-				res.json({ message: "Команда зарегистрирована.", team })
+				res.status(200).json({ message: "Команда зарегистрирована.", team })
 			} else {
 				return res.status(200).json({ message: "Вы уже находитесь в команде." })
 			}
@@ -44,36 +44,78 @@ class teamController {
 
 	async addTeamMember(req, res) {
 		try {
+			const errors = validationResult(req)
+			if (!errors.isEmpty()) {
+				return res.status(400).json({ message: "Ошибка при присоединении к команде.", errors })
+			}
 			const { memberId } = req.params
 			const { teamName, password } = req.body
 
-			const team = await Team.findOne({ teamName: teamName })
+			const team = await Team.findOne({ "teamName": teamName })
 			const user = await User.findById(memberId);
 
+
 			if (!team) {
-				res.json({ message: "Такой команды нет." })
+				res.status(400).json({ message: "Команды с таким именем не существует." })
 			}
 
-			if (team.password === password) {
-				if (user.isTeamMember == 0) {
-					user.isTeamMember = 1
-					team.members.push(user)
-					await team.save()
-					user.teamName = team.teamName;
-					await user.save()
-					return res.json({ message: "Пользователь успешно добавлен в команду", team });
-				} else {
-					return res.status(400).json({ message: `Этот пользователь уже находится в команде ${user.teamName}` })
-				}
+			if (team.password != password) {
+				res.status(400).json({ message: "Неверный пароль.", password });
+			}
+
+			if (user.isTeamMember == 0) {
+				user.isTeamMember = 1
+				team.members.push(user)
+				await team.save()
+				user.teamName = team.teamName;
+				await user.save()
+				res.status(200).json({ message: "Пользователь успешно добавлен в команду", team });
 			} else {
-				return res.status(200).json({ message: "Неверный пароль.", password });
+				res.status(400).json({ message: `Этот пользователь уже находится в команде ${user.teamName}` })
 			}
 		} catch (e) {
-			console.log(e);
-			res.status(400).json({ message: "Не удалось присоединиться к команде." })
+			res.status(400).json({ message: "Не удалось присоединиться к команде.", "error": e.message })
 		}
 	}
+	async leaveTeam(req, res) {
+		try {
+			const errors = validationResult(req)
+			if (!errors.isEmpty()) {
+				return res.status(400).json({ message: "Ошибка при покидании команды.", errors })
+			}
 
+			const { userId } = req.params
+			const { teamName } = req.body
+
+			const team = await Team.findOne({ "teamName": teamName })
+			const user = await User.findById(userId)
+
+
+			if (!team) {
+				res.status(400).json({ message: "Команды с таким ID не существует." })
+			}
+
+			if (!user) {
+				res.status(400).json({ message: "Пользователя с таким ID не существует." })
+			}
+
+			if (team.captain === user.name) {
+				res.status(400).json({ message: "Вы не можете выйти из команды, в которой являетесь капитаном. Для этого удалите ее." })
+			}
+			const userIndex = team.members.findIndex((user) => user._id.toString() === userId)
+
+			team.members.splice(userIndex)
+			await team.save()
+
+			user.teamName = ""
+			user.isTeamMember = 0
+			await user.save()
+
+			res.status(200).json({ message: "Вы успешно вышли из команды." })
+		} catch (e) {
+			res.status(400).json({ message: "Не удалось выйти из команды." })
+		}
+	}
 	async deleteTeam(req, res) {
 		try {
 			const { teamId } = req.params
@@ -117,6 +159,7 @@ class teamController {
 					await team.save()
 
 					memberCandidate.teamName = ""
+					memberCandidate.isTeamMember = 0
 					await memberCandidate.save()
 					return res.status(200).json({ message: "Пользователь выгнан." })
 				}
@@ -220,6 +263,10 @@ class teamController {
 
 	async sendAnswer(req, res) {
 		try {
+			const errors = validationResult(req)
+			if (!errors.isEmpty()) {
+				return res.status(400).json({ message: "Ошибка при отправке ответа.", errors })
+			}
 			const { eventId } = req.params
 			const { answer, taskId, teamId } = req.body
 
@@ -257,5 +304,39 @@ class teamController {
 		}
 	}
 
+	async joinEvent(req, res) {
+		try {
+			const errors = validationResult(req)
+			if (!errors.isEmpty()) {
+				return res.status(400).json({ message: "Ошибка при присоединении к событию.", errors })
+			}
+
+			const { capId } = req.params
+			const { eventName } = req.body
+
+			const cap = await User.findById(capId)
+			if (!cap) {
+				res.status(400).json({ message: "Не существует пользователя с таким ID." })
+			}
+
+			const team = await Team.findOne({ "teamName": cap.teamName })
+
+			const event = await Event.findOne({ "name": eventName })
+
+			if (!event) {
+				res.status(400).json({ message: "Не существует события с таким именем." })
+			}
+
+			event.members.push(team)
+			await event.save()
+			team.eventName = event.name
+			team.isEventMember = true
+			await team.save()
+
+			res.status(200).json({ message: "Вы успешно зарегистрировались на событие.", "Событие": event })
+		} catch (e) {
+			res.status(400).json({ message: "Не удалось зарегистрироваться на событие.", "error": e.message })
+		}
+	}
 }
 module.exports = new teamController();

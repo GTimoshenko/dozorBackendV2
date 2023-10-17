@@ -7,15 +7,22 @@ const { check } = require("express-validator");
 
 router.post('/new/:hostId', [
 	check('name', "Название события не может быть пустым.").notEmpty(),
-	check('description', "Описание не может быть пустым.").notEmpty()
+	check('description', "Описание не может быть пустым.").notEmpty(),
+	check('start', "Поле начало события не может быть пустым.").notEmpty(),
+	check('end', "Поле конец события не может быть пустым.").notEmpty()
 ], roleMiddleware(['vip', 'admin']), controller.createEvent)
 router.post('/delete/:eventId', roleMiddleware(['vip', 'admin']), controller.deleteEvent)
 router.post('/addteam/:eventId', roleMiddleware(['vip', 'admin']), controller.addTeam)
 router.post('/kickteam/:eventId', roleMiddleware(['vip', 'admin']), controller.kickTeam)
-router.post('/newtask/:eventId', controller.sendTask)
-router.post('/setstart/:eventId', controller.setStart)
-router.post('/setend/:eventId', controller.setEnd)
-router.post('/pushphoto/:eventId', controller.pushPhoto)
+router.post('/newtask/:eventId', [
+	check('question', "Поле вопрос не может быть пустым").notEmpty(),
+	check('answer', "Поле ответ не может быть пустым").notEmpty(),
+	check('clue', "Поле подсказка не может быть пустым").notEmpty()
+],
+	controller.sendTask)
+router.post('/pushphoto/:eventId', [
+	check('photo', "Поле фото не может быть пустым").notEmpty()
+], controller.pushPhoto)
 router.get('/getranked/:eventId', controller.getTeamRanked)
 router.get('/all', controller.getEvents)
 router.get('/eventmembers/:eventId', controller.getEventMembers)

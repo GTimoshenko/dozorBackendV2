@@ -1,7 +1,6 @@
 const { Schema, model } = require('mongoose')
 const { teamSchema } = require('../models/team')
 const { taskSchema } = require('../models/task')
-const { timerSchema } = require('../models/timer')
 
 
 const eventSchema = new Schema({
@@ -12,8 +11,8 @@ const eventSchema = new Schema({
 	description: { type: String, required: true },
 	members: { type: [teamSchema] },
 	questions: { type: [taskSchema] },
-	start: { type: Schema.Types.ObjectId, ref: 'Timer' },
-	end: { type: Schema.Types.ObjectId, ref: 'Timer' },
+	start: { type: String, required: true },
+	end: { type: String, required: true },
 	photos: { type: [String] },
 
 })

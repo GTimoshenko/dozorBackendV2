@@ -3,7 +3,6 @@ const Event = require('../models/event')
 const User = require('../models/user')
 const Team = require('../models/team')
 const Task = require('../models/task')
-const Timer = require('../models/timer')
 const { validationResult } = require('express-validator')
 
 class eventController {
@@ -14,7 +13,7 @@ class eventController {
 				return res.status(400).json({ message: 'Не удалось зарегистрировать событие.', errors })
 			}
 
-			const { name, description } = req.body
+			const { name, description, start, end } = req.body
 			const { hostId } = req.params
 
 			const eventCandidate = await Event.findOne({ name })
@@ -23,7 +22,7 @@ class eventController {
 				return res.status(400).json({ message: 'У вас уже есть активное событие.' })
 			}
 
-			const event = new Event({ name, description, })
+			const event = new Event({ name, description, start, end })
 			event.host = host
 			await event.save()
 			res.json({ message: "Событие создано.", event })
@@ -167,6 +166,10 @@ class eventController {
 
 	async sendTask(req, res) {
 		try {
+			const errors = validationResult(req)
+			if (!errors.isEmpty()) {
+				return res.status(400).json({ message: 'Не удалось зарегистрировать событие.', errors })
+			}
 			const { eventId } = req.params
 			const { question, clue, answer } = req.body
 			const candidate = await Event.findById(eventId)
@@ -180,7 +183,7 @@ class eventController {
 			await candidate.save()
 			res.status(200).json({ message: "Задание успешно выдано", task })
 		} catch (e) {
-			res.status(400).json({ message: "Ошибка при отправке вопроса", e })
+			res.status(400).json({ message: "Ошибка при отправке вопроса" })
 		}
 	}
 
@@ -202,47 +205,6 @@ class eventController {
 		}
 	}
 
-	async setStart(req, res) {
-		try {
-			const { hr, min, sec, day, mnt, yr } = req.body
-			const { eventId } = req.params
-			const start = new Timer({ hr, min, sec, day, mnt, yr })
-			await start.save()
-			const event = await Event.findById(eventId)
-
-			if (!event) {
-				res.status(400).json({ message: "Не существует события с таким ID" })
-			}
-
-			event.start = start
-			await event.save()
-			res.status(200).json(event.start)
-
-		} catch (e) {
-			res.status(400).json(e.message)
-		}
-	}
-
-	async setEnd(req, res) {
-		try {
-			const { hr, min, sec, day, mnt, yr } = req.body
-			const { eventId } = req.params
-			const end = new Timer({ hr, min, sec, day, mnt, yr })
-			await end.save()
-			const event = await Event.findById(eventId)
-
-			if (!event) {
-				res.status(400).json({ message: "Не существует события с таким ID" })
-			}
-
-			event.end = end
-			await event.save()
-			res.status(200).json(event.end)
-
-		} catch (e) {
-			res.status(400).json(e.message)
-		}
-	}
 
 	async getTimer(req, res) {
 		try {
@@ -254,16 +216,7 @@ class eventController {
 				res.status(400).json({ message: "Не существует события с таким ID" })
 			}
 
-			const start = await Timer.findById(event.start)
-			if (!start) {
-				res.status(400).json({ message: "У события не установлен таймер" })
-			}
-
-			const end = await Timer.findById(event.end)
-			if (!end) {
-				res.status(400).json({ message: "У события не установлен таймер" })
-			}
-			res.status(200).json({ "Начало события": start, "Конец события": end })
+			res.status(200).json({ "Начало события": event.start, "Конец события": event.end })
 		} catch (e) {
 			res.status(400).json({ message: "Не получилось получить данные о событии" })
 		}
@@ -271,6 +224,10 @@ class eventController {
 
 	async pushPhoto(req, res) {
 		try {
+			const errors = validationResult(req)
+			if (!errors.isEmpty()) {
+				return res.status(400).json({ message: 'Не удалось зарегистрировать событие.', errors })
+			}
 			const { photo } = req.body
 			const { eventId } = req.params
 
