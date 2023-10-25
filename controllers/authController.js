@@ -41,8 +41,87 @@ class authController {
 
 			const hashPassword = bcrypt.hashSync(password, 6)
 			const userRole = await Role.findOne({ value: "user" })
-			const user = new User({ name, password: hashPassword, avatarUrl: avatarUrl, eMail, roles: [userRole.value] })
+			const user = new User({ name, password: hashPassword, avatarUrl: avatarUrl, eMail: eMail, roles: [userRole.value] })
 			await user.save()
+
+			const accessToken = OAuth2_client.getAccessToken()
+
+			const transporter = nodemailer.createTransport({
+				service: 'gmail',
+				auth: {
+					type: 'OAuth2',
+					user: config.user,
+					clientId: config.clientId,
+					clientSecret: config.clientSecret,
+					refreshToken: config.refreshToken,
+					accessToken: accessToken
+				}
+			})
+
+			const mailOptions = {
+				from: `Поддержка DOZOR PROJECT <${config.user}>`,
+				to: eMail,
+				subject: 'Подтверждение регистрации в приложении "Ночной дозор"',
+				html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подтверждение регистрации в приложении "Ночной Дозор"</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            color: #777;
+        }
+        .code {
+            font-size: 24px;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #eee;
+            text-align: center;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Вы успешно зарегистрировались в приложении "Ночной Дозор"</h1>
+        <p>${name}, приятной игры в "Ночной дозор". </p>
+	<p>С уважением, поддержка DOZOR PROJECT.</p>
+        <footer>
+            <p>&copy; 2023 DOZOR PROJECT</p>
+        </footer>
+    </div>
+</body>
+</html>`
+			}
+
+			transporter.sendMail(mailOptions, function (e, res) {
+				if (e) {
+					console.log(e)
+				} else {
+					console.log(res)
+				}
+				transporter.close()
+			})
 
 			const token = generateAccessToken(user._id, user.roles)
 			return res.json({
@@ -55,8 +134,9 @@ class authController {
 				token,
 				roles: [userRole.value]
 			})
+
 		} catch (e) {
-			console.log(e)
+			console.log(e.message)
 			res.status(400).json({ message: "Не удалось зарегистрировать пользователя." })
 		}
 	}
@@ -304,28 +384,28 @@ class authController {
 		}
 	}
 
-	async getTeamById(req,res) {
+	async getTeamById(req, res) {
 		try {
-			const {userId} = req.params;
+			const { userId } = req.params;
 			const user = await User.findById(userId)
 
-			if(!user) {
-				res.status(400).json({message : "Пользователя с таким ID не существует."})
+			if (!user) {
+				res.status(400).json({ message: "Пользователя с таким ID не существует." })
 			}
 
-			if(user.teamName!=""){
-			const team = await Team.findOne({teamName : user.teamName})
+			if (user.teamName != "") {
+				const team = await Team.findOne({ teamName: user.teamName })
 
-			if(!team) {
-				res.status(400).json({message : "Команды с таким названием не существует."})
+				if (!team) {
+					res.status(400).json({ message: "Команды с таким названием не существует." })
+				}
+
+				res.status(200).json(team);
 			}
-
-			res.status(200).json(team);
-		}
 			else
-			res.status(200).json({message : "Этот пользователь пока не находится ни в какой команде.z"}) 
-		} catch(e) {
-			res.status(400).json({message : "Ошибка при получении данных о команде игрока."})
+				res.status(200).json({ message: "Этот пользователь пока не находится ни в какой команде.z" })
+		} catch (e) {
+			res.status(400).json({ message: "Ошибка при получении данных о команде игрока." })
 		}
 	}
 }

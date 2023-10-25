@@ -7,7 +7,9 @@ const roleMiddleware = require('../middleware/roleMiddleware')
 
 router.post('/register', [
 	check('name', "Имя пользователя не может быть пустым.").notEmpty(),
-	check('password', "Пароль не может быть короче 4 и длиннее 12 символов.").isLength({ min: 4, max: 12 })
+	check('name', 'Имя пользователя может состоять только из латинских букв и цифр.').isAlphanumeric(),
+	check('password', "Пароль не может быть короче 4 и длиннее 12 символов.").isLength({ min: 4, max: 12 }),
+	check('password', "Пароль может состоять только из латинских букв и цифр.").matches('[0-9a-zA-Z$!@#]')
 ], controller.userRegistration)
 router.post('/login', controller.userLogin)
 router.get('/users', roleMiddleware(['admin']), controller.getUsers)
