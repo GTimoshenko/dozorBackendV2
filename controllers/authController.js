@@ -9,6 +9,7 @@ const nodemailer = require('nodemailer')
 const google = require('googleapis')
 const config = require('./mailerConfig')
 const otpGenerator = require('otp-generator')
+require('dotenv').config()
 
 
 
@@ -44,20 +45,15 @@ class authController {
 			const user = new User({ name, password: hashPassword, avatarUrl: avatarUrl, eMail: eMail, roles: [userRole.value] })
 			await user.save()
 
-			const accessToken = OAuth2_client.getAccessToken()
 
 			const transporter = nodemailer.createTransport({
 				service: 'gmail',
+				host: 'dozorsfedu@gmail.com',
 				auth: {
-					type: 'OAuth2',
 					user: config.user,
-					clientId: config.clientId,
-					clientSecret: config.clientSecret,
-					refreshToken: config.refreshToken,
-					accessToken: accessToken
+					pass: config.password
 				}
 			})
-
 			const mailOptions = {
 				from: `Поддержка DOZOR PROJECT <${config.user}>`,
 				to: eMail,
@@ -218,13 +214,10 @@ class authController {
 
 			const transporter = nodemailer.createTransport({
 				service: 'gmail',
+				host: 'dozorsfedu@gmail.com',
 				auth: {
-					type: 'OAuth2',
 					user: config.user,
-					clientId: config.clientId,
-					clientSecret: config.clientSecret,
-					refreshToken: config.refreshToken,
-					accessToken: accessToken
+					pass: config.password
 				}
 			})
 
