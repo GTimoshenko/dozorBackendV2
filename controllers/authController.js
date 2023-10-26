@@ -48,7 +48,7 @@ class authController {
 
 			const transporter = nodemailer.createTransport({
 				service: 'gmail',
-				host: 'dozorsfedu@gmail.com',
+				host: 'smtp.gmail.com',
 				auth: {
 					user: config.user,
 					pass: config.password
@@ -214,7 +214,7 @@ class authController {
 
 			const transporter = nodemailer.createTransport({
 				service: 'gmail',
-				host: 'dozorsfedu@gmail.com',
+				host: 'smtp.gmail.com',
 				auth: {
 					user: config.user,
 					pass: config.password
