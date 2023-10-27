@@ -1,13 +1,13 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const cors=require("cors")
+const cors = require("cors")
 const authRouter = require('./routers/authRouter')
 const eventRouter = require('./routers/eventRouter')
 const teamRouter = require('./routers/teamRouter')
 const chatRouter = require('./routers/chatRouter')
 const messageRouter = require('./routers/messageRouter')
 
-const PORT=process.env.PORT||5000
+const PORT = process.env.PORT || 5000
 
 const app = express()
 const dbUrl = `mongodb+srv://glebushnik:dozorAdmin@cluster0.0rfdegy.mongodb.net/?retryWrites=true&w=majority`
@@ -23,7 +23,8 @@ app.use("/message", messageRouter)
 const start = async () => {
 	try {
 		await mongoose.connect(dbUrl);
-		app.listen(PORT, () => console.log('Server is running on port: ', PORT));
+		app.timeout = 60000
+		app.listen(PORT, () => console.log('Server is running on port: ', PORT, app.timeout));
 	} catch (e) {
 		console.log(e);
 	}

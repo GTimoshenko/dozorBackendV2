@@ -52,8 +52,8 @@ class authController {
 				secure: true,
 				auth: {
 					type: 'login',
-					user: 'dozormailer@mail.ru',
-					pass: '6yCuu5k9NfeVvj37xXXk'
+					user: config.user,
+					pass: config.password
 				}
 			})
 			const mailOptions = {
