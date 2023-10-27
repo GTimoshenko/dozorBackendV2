@@ -47,9 +47,9 @@ class authController {
 
 
 			const transporter = nodemailer.createTransport({
-				service: 'gmail',
-				host: 'smtp.gmail.com',
-				secure: 'false',
+				host: 'smtp.mail.ru',
+				port: 465,
+				secure: true,
 				auth: {
 					user: config.user,
 					pass: config.password
@@ -214,9 +214,9 @@ class authController {
 			const accessToken = OAuth2_client.getAccessToken()
 
 			const transporter = nodemailer.createTransport({
-				service: 'gmail',
-				host: 'smtp.gmail.com',
-				secure: 'false',
+				host: 'smtp.mail.ru',
+				port: 465,
+				secure: true,
 				auth: {
 					user: config.user,
 					pass: config.password
