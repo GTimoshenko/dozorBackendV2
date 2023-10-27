@@ -53,25 +53,31 @@ class eventController {
 	async addTeam(req, res) {
 		try {
 			const { eventId } = req.params
-			const { hostId, teamId } = req.body
+			const { hostId, teamName } = req.body
 
 			const host = await User.findById(hostId)
 			const event = await Event.findById(eventId)
-			const team = await Team.findById(teamId)
+			const team = await Team.findOne({ teamName })
 
-			if (host.name === event.host.name) {
-				if (team.isEventMember == 0) {
-					team.isEventMember = 1
-					event.members.push(team)
-					await event.save()
-					team.eventName = event.name
-					await team.save()
-					res.json({ message: "Команда успешно добавлена.", event })
-				} else {
-					res.status(400).json({ message: `Эта команда уже находится в событии ${event.name}` })
-				}
+			if (!team) {
+				res.status(404).json({ message: "Команды с таким именем не существует" })
 			} else {
-				res.status(200).json({ message: "Данный пользователь не является организатором этого мероприятия." })
+				if (host.name === event.host.name) {
+					if (team.isEventMember == 0) {
+						team.isEventMember = 1
+						event.members.push(team)
+						await event.save()
+						team.eventName = event.name
+						console.log(team.eventName)
+						console.log(event.name)
+						await team.save()
+						res.json({ message: "Команда успешно добавлена.", event })
+					} else {
+						res.status(400).json({ message: `Эта команда уже находится в событии ${event.name}` })
+					}
+				} else {
+					res.status(200).json({ message: "Данный пользователь не является организатором этого мероприятия." })
+				}
 			}
 		} catch (e) {
 			res.status(400).json({ message: "Не удалось добавить команду.", e })
@@ -81,24 +87,28 @@ class eventController {
 	async kickTeam(req, res) {
 		try {
 			const { eventId } = req.params
-			const { hostId, teamId } = req.body
+			const { hostId, teamName } = req.body
 
 			const host = await User.findById(hostId)
 			const event = await Event.findById(eventId)
-			const team = await Team.findById(teamId)
+			const team = await Team.findOne({ teamName })
 
-			if (host.name === event.host.name) {
-				const teamIndex = event.members.findIndex((team) => team._id.toString() === teamId)
-				event.members.splice(teamIndex, 1)
+			if (!team) {
+				res.status(404).json({ message: "Команды с таким именем не существует" })
+			} else {
+				if (host.name === event.host.name) {
+					const teamIndex = event.members.findIndex((team) => team.teamName === teamName)
+					event.members.splice(teamIndex, 1)
 
-				await event.save()
-				team.eventName = ""
-				team.isEventMember = 0
-				await team.save()
-				res.json({ message: "Команда удалена.", team })
-			}
-			else {
-				res.json({ message: "Данный пользователь не является организатором этого мероприятия." })
+					await event.save()
+					team.eventName = ""
+					team.isEventMember = 0
+					await team.save()
+					res.json({ message: "Команда удалена.", team })
+				}
+				else {
+					res.json({ message: "Данный пользователь не является организатором этого мероприятия." })
+				}
 			}
 		} catch (e) {
 			console.log(e)

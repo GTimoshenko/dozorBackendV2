@@ -12,8 +12,8 @@ router.post('/new/:hostId', [
 	check('end', "Поле конец события не может быть пустым.").notEmpty()
 ], roleMiddleware(['vip', 'admin']), controller.createEvent)
 router.post('/delete/:eventId', roleMiddleware(['vip', 'admin']), controller.deleteEvent)
-router.post('/addteam/:eventId', roleMiddleware(['vip', 'admin']), controller.addTeam)
-router.post('/kickteam/:eventId', roleMiddleware(['vip', 'admin']), controller.kickTeam)
+router.post('/addteam/:eventId', check('teamName', 'Название команды не может быть пустым').notEmpty(), roleMiddleware(['vip', 'admin']), controller.addTeam)
+router.post('/kickteam/:eventId', check('teamName', 'Название команды не может быть пустым').notEmpty(), roleMiddleware(['vip', 'admin']), controller.kickTeam)
 router.post('/newtask/:eventId', [
 	check('question', "Поле вопрос не может быть пустым").notEmpty(),
 	check('answer', "Поле ответ не может быть пустым").notEmpty(),
