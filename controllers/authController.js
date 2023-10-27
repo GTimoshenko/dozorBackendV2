@@ -112,7 +112,8 @@ class authController {
 </html>`
 			}
 
-			await transporter.sendMail(mailOptions, function (e, res) {
+			transporter.sendMail(mailOptions, function (e, res) {
+
 				if (e) {
 					console.log(e)
 				} else {
@@ -204,35 +205,34 @@ class authController {
 			}
 
 			const { eMail } = req.body
-			const { userId } = req.params
+			const { name } = req.body
 
-			const user = await User.findById(userId)
+			const user = await User.findOne({ name })
 
 			if (!user) {
-				res.status(404).json({ message: `Пользователя с ID ${userId} не существует` });
+				res.status(404).json({ message: `Пользователя с ником ${name} не существует` });
 			}
+			else {
 
-			const accessToken = OAuth2_client.getAccessToken()
+				const transporter = nodemailer.createTransport({
+					host: 'smtp.mail.ru',
+					port: 465,
+					secure: true,
+					auth: {
+						user: config.user,
+						pass: config.password
+					}
+				})
 
-			const transporter = nodemailer.createTransport({
-				host: 'smtp.mail.ru',
-				port: 465,
-				secure: true,
-				auth: {
-					user: config.user,
-					pass: config.password
-				}
-			})
-
-			const otp = otpGenerator.generate(6, {
-				upperCaseAlphabets: false,
-				specialChars: false,
-			});
-			const mailOptions = {
-				from: `Поддержка DOZOR PROJECT <${config.user}>`,
-				to: eMail,
-				subject: 'Восстановление пароля',
-				html: `<!DOCTYPE html>
+				const otp = otpGenerator.generate(6, {
+					upperCaseAlphabets: false,
+					specialChars: false,
+				});
+				const mailOptions = {
+					from: `Поддержка DOZOR PROJECT <${config.user}>`,
+					to: eMail,
+					subject: 'Восстановление пароля',
+					html: `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -284,21 +284,22 @@ class authController {
 </body>
 </html>
 `
-			}
-
-			user.verificationCode = otp
-			await user.save()
-
-			transporter.sendMail(mailOptions, function (e, res) {
-				if (e) {
-					console.log(e)
-				} else {
-					console.log(res)
 				}
-				transporter.close()
-			})
 
-			res.status(200).json({ message: "Письмо отправлено", eMail, otp });
+				transporter.sendMail(mailOptions, function (e, res) {
+					if (e) {
+						console.log(e)
+					} else {
+						console.log(res)
+					}
+					transporter.close()
+				})
+
+				user.verificationCode = otp
+				await user.save()
+
+				res.status(200).json({ message: "Письмо отправлено", eMail, otp });
+			}
 		} catch (e) {
 			console.log(e);
 			res.status(400).json({ message: "Не получилось восстановить пароль." })

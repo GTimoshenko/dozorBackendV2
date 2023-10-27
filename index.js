@@ -23,8 +23,7 @@ app.use("/message", messageRouter)
 const start = async () => {
 	try {
 		await mongoose.connect(dbUrl);
-		app.timeout = 60000
-		app.listen(PORT, () => console.log('Server is running on port: ', PORT, app.timeout));
+		app.listen(PORT, () => console.log('Server is running on port: ', PORT));
 	} catch (e) {
 		console.log(e);
 	}

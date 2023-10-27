@@ -14,9 +14,10 @@ router.post('/register', [
 router.post('/login', controller.userLogin)
 router.get('/users', roleMiddleware(['admin']), controller.getUsers)
 router.get('/user/:userId', controller.getUser)
-router.post('/user/:userId/resetpassword', [
+router.post('/user/resetpassword', [
 	check('eMail', "Введите корректный eMail.").isEmail(),
-	check('eMail', "Поле eMail не может быть пустым.").notEmpty()
+	check('eMail', "Поле eMail не может быть пустым.").notEmpty(),
+	check('name', 'Имя пользователя не может быть пустым.').notEmpty()
 ],
 	controller.resetPassword)
 router.post('/user/:userId/newpassword', [

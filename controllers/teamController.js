@@ -95,23 +95,25 @@ class teamController {
 				res.status(400).json({ message: "Команды с таким ID не существует." })
 			}
 
-			if (!user) {
+			else if (!user) {
 				res.status(400).json({ message: "Пользователя с таким ID не существует." })
 			}
 
-			if (team.captain === user.name) {
+			else if (team.captain.name === user.name) {
 				res.status(400).json({ message: "Вы не можете выйти из команды, в которой являетесь капитаном. Для этого удалите ее." })
 			}
-			const userIndex = team.members.findIndex((user) => user._id.toString() === userId)
+			else {
+				const userIndex = team.members.findIndex((user) => user._id.toString() === userId)
 
-			team.members.splice(userIndex)
-			await team.save()
+				team.members.splice(userIndex)
+				await team.save()
 
-			user.teamName = ""
-			user.isTeamMember = 0
-			await user.save()
+				user.teamName = ""
+				user.isTeamMember = 0
+				await user.save()
 
-			res.status(200).json({ message: "Вы успешно вышли из команды." })
+				res.status(200).json({ message: "Вы успешно вышли из команды." })
+			}
 		} catch (e) {
 			res.status(400).json({ message: "Не удалось выйти из команды." })
 		}
@@ -278,9 +280,10 @@ class teamController {
 			}
 			if (task.answer == answer) {
 				task.winner = team.teamName
+				team.score++
 				await task.save()
 				await candidate.save()
-				team.score++
+				await team.save()
 				res.status(200).json({ message: "Правильный ответ." })
 			} else {
 				res.status(200).json({ message: "Неправильный ответ." })
