@@ -312,17 +312,17 @@ class authController {
 			if (!errors.isEmpty()) {
 				return res.status(400).json({ message: "Ошибка при создании нового пароля", errors })
 			}
-			const { userId } = req.params
+			const { name } = req.body
 			const { verificationCode, password1, password2 } = req.body
 
 			if (password1 != password2) {
 				res.status(400).json({ message: 'Пароли не совпадают.' })
 			}
 
-			const user = await User.findById(userId)
+			const user = await User.findOne({ name })
 
 			if (!user) {
-				res.status(404).json({ message: `Пользователя с ID ${userId} не существует` });
+				res.status(404).json({ message: `Пользователя с ником ${name} не существует` });
 			}
 
 			if (verificationCode != user.verificationCode) {

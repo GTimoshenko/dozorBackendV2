@@ -20,10 +20,11 @@ router.post('/user/resetpassword', [
 	check('name', 'Имя пользователя не может быть пустым.').notEmpty()
 ],
 	controller.resetPassword)
-router.post('/user/:userId/newpassword', [
+router.post('/user/newpassword', [
 	check('password1', "Пароль не может быть короче 4 и длиннее 12 символов.").isLength({ min: 4, max: 12 }),
 	check('password2', "Пароль не может быть короче 4 и длиннее 12 символов.").isLength({ min: 4, max: 12 }),
-	check('verificationCode', "Код подтверждения пользователя не может быть пустым.").notEmpty()
+	check('verificationCode', "Код подтверждения пользователя не может быть пустым.").notEmpty(),
+	check('name', 'Имя пользователя не может быть пустым.').notEmpty()
 ],
 	controller.createNewPassword)
 router.get('/is-team-member/:userId', controller.isTeamMember)
