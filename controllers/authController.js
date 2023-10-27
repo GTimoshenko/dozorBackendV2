@@ -112,7 +112,7 @@ class authController {
 </html>`
 			}
 
-			transporter.sendMail(mailOptions, function (e, res) {
+			await transporter.sendMail(mailOptions, function (e, res) {
 				if (e) {
 					console.log(e)
 				} else {
